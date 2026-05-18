@@ -1,56 +1,83 @@
-// Navegador de abas (Tab Bar) — a barra inferior do app
-// Cada aba é uma tela diferente
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { View, StyleSheet } from 'react-native';
+import HomeScreen from "./HomeScreen";
+import ProgressScreen from "./ProgressScreen";
+import NotificationsScreen from "./NotificationsScreen";
+import DocumentsScreen from "./DocumentsScreen";
+import MaintenanceScreen from "./MaintenanceScreen";
 
-import HomeScreen from './HomeScreen';
-import ProgressScreen from './ProgressScreen';
-import NotificationsScreen from './NotificationsScreen';
-import DocumentsScreen from './DocumentsScreen';
-import MaintenanceScreen from './MaintenanceScreen';
+import colors from "../styles/colors";
 
-import colors from '../styles/colors';
-
-// Cria o navegador de abas
 const Tab = createBottomTabNavigator();
+
+function CustomTabBar({ state, descriptors, navigation }) {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View
+      pointerEvents="box-none"
+      style={[
+        styles.tabWrapper,
+        { bottom: insets.bottom + 14 },
+      ]}
+    >
+      <View style={styles.tabBar}>
+        {state.routes.map((route, index) => {
+          const focused = state.index === index;
+
+          const icons = {
+            Home: focused ? "home" : "home-outline",
+            Progresso: focused ? "analytics" : "analytics-outline",
+            Notificações: focused ? "notifications" : "notifications-outline",
+            Documentos: focused ? "document-text" : "document-text-outline",
+            Manutenção: focused ? "construct" : "construct-outline",
+          };
+
+          const onPress = () => {
+            const event = navigation.emit({
+              type: "tabPress",
+              target: route.key,
+              canPreventDefault: true,
+            });
+
+            if (!focused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
+
+          return (
+            <TouchableOpacity
+              key={route.key}
+              onPress={onPress}
+              activeOpacity={0.8}
+              style={styles.tabItem}
+            >
+              <View style={[styles.iconBox, focused && styles.activeIcon]}>
+                <Ionicons
+                  name={icons[route.name]}
+                  size={20}
+                  color={focused ? colors.white : colors.textMuted}
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
 
 export default function MainTabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false, // Esconde o header padrão (usamos o nosso)
-
-        // Ícone de cada aba
-        tabBarIcon: ({ focused, color, size }) => {
-          const icons = {
-            Home: focused ? 'home' : 'home-outline',
-            Progresso: focused ? 'layers' : 'layers-outline',
-            Notificações: focused ? 'notifications' : 'notifications-outline',
-            Documentos: focused ? 'folder' : 'folder-outline',
-            Manutenção: focused ? 'construct' : 'construct-outline',
-          };
-          return <Ionicons name={icons[route.name]} size={22} color={color} />;
-        },
-
-        // Cores e estilo da tab bar
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 70,
-          paddingBottom: 10,
-          paddingTop: 8,
-        },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: '600',
-        },
-      })}
+      tabBar={(props) => <CustomTabBar {...props} />}
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Progresso" component={ProgressScreen} />
@@ -60,3 +87,70 @@ export default function MainTabNavigator() {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  tabWrapper: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+
+    alignItems: "center",
+  },
+
+  tabBar: {
+    width: 280,
+    height: 60,
+
+    borderRadius: 30,
+
+    backgroundColor: colors.surface,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+
+    paddingHorizontal: 10,
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.16,
+    shadowRadius: 18,
+
+    elevation: 10,
+  },
+
+  tabItem: {
+    width: 48,
+    height: 48,
+
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  iconBox: {
+    width: 42,
+    height: 42,
+
+    borderRadius: 21,
+
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  activeIcon: {
+    backgroundColor: colors.primary,
+
+    shadowColor: colors.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.28,
+    shadowRadius: 8,
+
+    elevation: 5,
+  },
+});

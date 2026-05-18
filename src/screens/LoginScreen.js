@@ -1,68 +1,177 @@
-// Tela de Login
-// O usuário entra com email e senha
-// Após clicar em "Entrar", vai para a tela Home
+// Tela de Login - WheelTrack
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
+
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Switch,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import colors from '../styles/colors';
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+
+import colors from "../styles/colors";
+
+// Quando tiver backend real, troca para false
+const USE_MOCK_LOGIN = true;
+
+// Quando tiver backend real, coloca o endereço aqui
+const API_URL = "http://SEU_IP_LOCAL:3000";
 
 export default function LoginScreen({ navigation }) {
-  // Estado local: controla o que o usuário digitou
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [keepConnected, setKeepConnected] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const insets = useSafeAreaInsets();
 
-  // Função chamada ao pressionar "Entrar"
-  const handleLogin = () => {
-    // Em um app real, aqui enviaria para uma API
-    // Por enquanto, vai direto para Home
-    navigation.replace('Main');
+  const validateFields = () => {
+    const cleanEmail = email.trim();
+
+    if (!cleanEmail || !password.trim()) {
+      Alert.alert(
+        "Campos vazios",
+        "Por favor, preencha o e-mail e a senha."
+      );
+
+      return false;
+    }
+
+    if (!cleanEmail.includes("@")) {
+      Alert.alert(
+        "E-mail inválido",
+        "Digite um e-mail válido para continuar."
+      );
+
+      return false;
+    }
+
+    if (password.length < 4) {
+      Alert.alert(
+        "Senha muito curta",
+        "A senha precisa ter pelo menos 4 caracteres."
+      );
+
+      return false;
+    }
+
+    return true;
+  };
+
+  const mockLogin = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    return {
+      success: true,
+      user: {
+        name: "Lavinia Milena",
+        email: email.trim(),
+      },
+      token: "mock-token-carbon",
+    };
+  };
+
+  const realLogin = async () => {
+    const response = await fetch(`${API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.trim(),
+        password,
+        keepConnected,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "E-mail ou senha inválidos.");
+    }
+
+    return data;
+  };
+
+  const handleLogin = async () => {
+    if (!validateFields()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const data = USE_MOCK_LOGIN
+        ? await mockLogin()
+        : await realLogin();
+
+      if (data.success || data.token) {
+        navigation.replace("Main");
+      } else {
+        Alert.alert(
+          "Erro no Login",
+          data.message || "Não foi possível entrar."
+        );
+      }
+    } catch (error) {
+      Alert.alert(
+        "Erro no Login",
+        error.message || "Ocorreu um problema inesperado."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.wrapper}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0}
     >
       <ScrollView
-        contentContainerStyle={[styles.container, { paddingTop: insets.top + 20 }]}
+        contentContainerStyle={[
+          styles.container,
+          { paddingTop: insets.top },
+        ]}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        bounces={false}
       >
-        {/* Logo e tagline */}
+        {/* TOPO */}
         <View style={styles.logoSection}>
-          <View style={styles.logoIcon}>
-            <Ionicons name="shield-checkmark" size={32} color={colors.primary} />
-          </View>
-          <Text style={styles.logoText}>WheelTrack</Text>
-          <Text style={styles.tagline}>segurança em suas mãos.</Text>
+          <Text style={styles.logoText}>CARBON</Text>
         </View>
 
-        {/* Card de login */}
+        {/* CARD */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Login</Text>
+          <Text style={styles.cardTitle}>Bem Vindo!</Text>
 
-          {/* Campo de email */}
+          {/* EMAIL */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Email</Text>
+
             <View style={styles.inputWrapper}>
-              <Ionicons name="mail-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
+              <Ionicons
+                name="mail-outline"
+                size={20}
+                color={colors.textMuted}
+                style={styles.inputIcon}
+              />
+
               <TextInput
                 style={styles.input}
                 placeholder="Inserir email"
@@ -71,55 +180,101 @@ export default function LoginScreen({ navigation }) {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
+                editable={!isLoading}
+                returnKeyType="next"
               />
             </View>
           </View>
 
-          {/* Campo de senha */}
+          {/* SENHA */}
           <View style={styles.inputGroup}>
             <Text style={styles.inputLabel}>Senha</Text>
+
             <View style={styles.inputWrapper}>
-              <Ionicons name="lock-closed-outline" size={18} color={colors.textMuted} style={styles.inputIcon} />
+              <Ionicons
+                name="lock-closed-outline"
+                size={20}
+                color={colors.textMuted}
+                style={styles.inputIcon}
+              />
+
               <TextInput
-                style={[styles.input, { flex: 1 }]}
+                style={styles.input}
                 placeholder="Inserir senha"
                 placeholderTextColor={colors.textMuted}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
+                editable={!isLoading}
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+                onSubmitEditing={handleLogin}
               />
-              {/* Botão para mostrar/esconder senha */}
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeButton}>
+
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                disabled={isLoading}
+                style={styles.eyeButton}
+                activeOpacity={0.7}
+              >
                 <Ionicons
-                  name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                  size={18}
+                  name={showPassword ? "eye-off-outline" : "eye-outline"}
+                  size={20}
                   color={colors.textMuted}
                 />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Toggle "Manter conectado" */}
+          {/* SWITCH */}
           <View style={styles.keepRow}>
             <Text style={styles.keepText}>Manter conectado</Text>
+
             <Switch
               value={keepConnected}
               onValueChange={setKeepConnected}
-              trackColor={{ false: colors.border, true: colors.primary + '80' }}
-              thumbColor={keepConnected ? colors.primary : colors.textMuted}
+              disabled={isLoading}
+              trackColor={{
+                false: colors.border,
+                true: colors.primary + "80",
+              }}
+              thumbColor={
+                keepConnected
+                  ? colors.primary
+                  : colors.textMuted
+              }
             />
           </View>
 
-          {/* Botão principal */}
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin} activeOpacity={0.85}>
-            <Text style={styles.loginButtonText}>Entrar</Text>
+          {/* BOTÃO */}
+          <TouchableOpacity
+            style={[
+              styles.loginButton,
+              isLoading && {
+                opacity: 0.75,
+              },
+            ]}
+            onPress={handleLogin}
+            disabled={isLoading}
+            activeOpacity={0.85}
+          >
+            {isLoading ? (
+              <ActivityIndicator
+                color={colors.background}
+                size="small"
+              />
+            ) : (
+              <Text style={styles.loginButtonText}>Entrar</Text>
+            )}
           </TouchableOpacity>
-        </View>
 
-        {/* Texto de rodapé */}
-        <Text style={styles.footer}>
-          WheelTrack · Blindagem com rastreamento
-        </Text>
+          {/* FOOTER */}
+          <Text style={styles.footer}>
+            Choose Your Way, We Make Safe
+          </Text>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -129,112 +284,203 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: colors.background,
+    overflow: "hidden",
   },
+
   container: {
     flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 40,
-    alignItems: 'center',
+    justifyContent: "flex-end",
   },
+
   logoSection: {
-    alignItems: 'center',
-    marginBottom: 40,
+    height: 240,
+
+    justifyContent: "center",
+    alignItems: "center",
   },
-  logoIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
-    backgroundColor: colors.primaryGlow,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: colors.primary + '40',
-  },
+
   logoText: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: colors.textPrimary,
-    letterSpacing: 1,
+    fontSize: 32,
+
+    color: colors.primary,
+
+    letterSpacing: 3,
+
+    fontFamily: "Outfit_700Bold",
   },
+
   tagline: {
-    fontSize: 13,
+    fontSize: 10,
     color: colors.textSecondary,
     marginTop: 4,
     letterSpacing: 0.5,
   },
+
   card: {
-    width: '100%',
+    flex: 1,
+
+    width: "100%",
+    alignSelf: "stretch",
+
+    marginTop: -20,
+
     backgroundColor: colors.surface,
-    borderRadius: 24,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: colors.border,
+
+    borderTopLeftRadius: 42,
+    borderTopRightRadius: 42,
+
+    paddingHorizontal: 28,
+    paddingTop: 36,
+    paddingBottom: 20,
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: -4,
+    },
+
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+
+    elevation: 10,
   },
+
   cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.textPrimary,
+    fontSize: 28,
+
+    color: colors.white,
+
+    marginBottom: 36,
+
+    letterSpacing: -1,
+
+    fontFamily: "Outfit_600SemiBold",
+  },
+
+  inputGroup: {
     marginBottom: 24,
   },
-  inputGroup: {
-    marginBottom: 16,
-  },
+
   inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+
     color: colors.textSecondary,
+
     marginBottom: 8,
+
     letterSpacing: 0.3,
+
+    fontFamily: "Outfit_600SemiBold",
   },
+
   inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surfaceLight,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 14,
-    height: 50,
+    flexDirection: "row",
+    alignItems: "center",
+
+    backgroundColor: colors.surface2,
+
+    borderRadius: 18,
+
+    paddingHorizontal: 16,
+
+    height: 58,
+
+    borderWidth: 0.4,
+    borderColor: "rgba(255,255,255,0.14)",
+
+    shadowColor: "#000",
+
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+
+    elevation: 5,
   },
+
   inputIcon: {
-    marginRight: 10,
+    marginRight: 12,
   },
+
   input: {
     flex: 1,
-    fontSize: 15,
+
+    fontSize: 16,
+
     color: colors.textPrimary,
+
+    fontFamily: "Outfit_400Regular",
   },
+
   eyeButton: {
     padding: 4,
   },
+
   keepRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-    marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+
+    marginTop: 6,
+    marginBottom: 34,
   },
+
   keepText: {
-    fontSize: 14,
+    fontSize: 15,
+
     color: colors.textSecondary,
+
+    fontFamily: "Outfit_400Regular",
   },
+
   loginButton: {
     backgroundColor: colors.primary,
-    borderRadius: 14,
-    paddingVertical: 15,
-    alignItems: 'center',
+
+    height: 58,
+
+    borderRadius: 24,
+
+    alignItems: "center",
+    justifyContent: "center",
+
+    marginTop: 8,
+
+    shadowColor: colors.primary,
+
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+
+    shadowOpacity: 0.35,
+    shadowRadius: 16,
+
+    elevation: 8,
   },
+
   loginButtonText: {
-    color: colors.background,
-    fontWeight: '800',
-    fontSize: 16,
+    color: colors.white,
+
+    fontSize: 18,
+
     letterSpacing: 0.5,
+
+    fontFamily: "Outfit_700Bold",
   },
+
   footer: {
-    marginTop: 32,
-    fontSize: 12,
+    marginTop: "auto",
+
+    textAlign: "center",
+
+    fontSize: 13,
+
     color: colors.textMuted,
-    textAlign: 'center',
+
+    fontFamily: "Outfit_400Regular",
   },
 });

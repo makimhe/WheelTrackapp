@@ -8,34 +8,7 @@ export const user = {
   avatar: null,
 };
 
-export const vehicles = [
-  {
-    id: '1',
-    model: 'Porsche 911',
-    plate: 'ABC-1212',
-    color: 'Prata',
-    year: 2023,
-    blindingLevel: 2,
-    status: 'Em andamento',
-    statusColor: '#00B4D8',
-    progress: 55, // porcentagem concluída
-    image: require('../../assets/porsche.png'),
-  },
-  {
-    id: '2',
-    model: 'Range Rover SV',
-    plate: 'XYZ-3021',
-    color: 'Preto',
-    year: 2022,
-    blindingLevel: 3,
-    status: 'Concluído',
-    statusColor: '#00C896',
-    progress: 100,
-    image: require('../../assets/rangerover.png'),
-  },
-];
-
-export const blindingSteps = [
+const porscheSteps = [
   {
     id: '1',
     title: 'Preparação e documentação',
@@ -126,6 +99,126 @@ export const blindingSteps = [
     ],
   },
 ];
+
+const rangeRoverSteps = [
+  {
+    id: '1',
+    title: 'Preparação e documentação',
+    status: 'completed',
+    substeps: [
+      { text: 'Verificação dos dados do veículo', done: true },
+      { text: 'Coleta de documentação', done: true },
+      { text: 'Solicitação da autorização ao Exército Brasileiro', done: true },
+    ],
+  },
+  {
+    id: '2',
+    title: 'Autorização oficial',
+    status: 'completed',
+    substeps: [
+      { text: 'Envio do pedido ao Exército', done: true },
+      { text: 'Recebimento da Autorização de Blindagem', done: true },
+      { text: 'Liberação para início dos trabalhos', done: true },
+    ],
+  },
+  {
+    id: '3',
+    title: 'Preparação do veículo',
+    status: 'completed',
+    substeps: [
+      { text: 'Inspeção inicial do carro', done: true },
+      { text: 'Desmontagem de componentes internos', done: true },
+      { text: 'Remoção dos vidros originais', done: true },
+      { text: 'Proteção e isolamento de componentes sensíveis', done: true },
+    ],
+  },
+  {
+    id: '4',
+    title: 'Aplicação da blindagem',
+    status: 'completed',
+    substeps: [
+      { text: 'Corte e preparo de placas de aço balístico', done: true },
+      { text: 'Aplicação dos materiais balísticos nas áreas vulneráveis', done: true },
+      { text: 'Verificação de adaptação de estrutura', done: true },
+      { text: 'Tratamento anticorrosão', done: true },
+    ],
+  },
+  {
+    id: '5',
+    title: 'Instalação de vidros balísticos',
+    status: 'completed',
+    substeps: [
+      { text: 'Seleção de vidros certificados', done: true },
+      { text: 'Instalação dos vidros balísticos', done: true },
+      { text: 'Teste de vedação e abertura/fechamento', done: true },
+    ],
+  },
+  {
+    id: '6',
+    title: 'Blindagem de componentes internos',
+    status: 'completed',
+    substeps: [
+      { text: 'Blindagem interna', done: true },
+      { text: 'Blindagem de áreas internas específicas', done: true },
+    ],
+  },
+  {
+    id: '7',
+    title: 'Remontagem',
+    status: 'completed',
+    substeps: [
+      { text: 'Remontagem dos painéis, forros, estofados', done: true },
+      { text: 'Reinstalação de componentes elétricos e eletrônicos', done: true },
+    ],
+  },
+  {
+    id: '8',
+    title: 'Inspeções e testes de qualidade',
+    status: 'completed',
+    substeps: [
+      { text: 'Inspeção estruturada de blindagem', done: true },
+      { text: 'Teste de funcionamento', done: true },
+      { text: 'Teste de rodagem / dinâmica', done: true },
+    ],
+  },
+  {
+    id: '9',
+    title: 'Documentação final e entrega',
+    status: 'completed',
+    substeps: [
+      { text: 'Emissão da Declaração de Blindagem', done: true },
+      { text: 'Entrega do veículo blindado', done: true },
+    ],
+  },
+];
+
+export const vehicles = [
+  {
+    id: 1,
+    model: 'Porsche 911',
+    plate: 'ABC-1234',
+    status: 'Em andamento',
+    progress: 72,
+    blindingLevel: 'III-A',
+    currentStep: 'Aplicação da blindagem',
+    image: require('../../assets/cars/byd.png'),
+    steps: porscheSteps,
+  },
+  {
+    id: 2,
+    model: 'Range Rover',
+    plate: 'XYZ-9090',
+    status: 'Concluído',
+    progress: 100,
+    blindingLevel: 'III-A',
+    currentStep: 'Documentação final e entrega',
+    image: require('../../assets/cars/rangerover.png'),
+    steps: rangeRoverSteps,
+  },
+];
+
+// Mantém isso para telas antigas que ainda importam blindingSteps
+export const blindingSteps = porscheSteps;
 
 export const notifications = [
   {

@@ -3,13 +3,14 @@
 
 const colors = {
   // Fundos
-  background: '#0A0A0F',       // Fundo principal (quase preto)
-  surface: '#13131A',          // Cards e superfícies
-  surfaceLight: '#1C1C28',     // Cards um pouco mais claros
-  border: '#2A2A3D',           // Bordas sutis
+  background: '#e0e0e0f6',       // Fundo principal (quase preto)
+  surface: '#1b1b1bf6',    
+  surface2: '#141414',      // Cards e superfícies
+  surfaceLight: 'rgba(0, 0, 0, 0.85)',     // Cards um pouco mais claros
+  border: '#b3b3b3',           // Bordas sutis
 
   // Cor principal (azul-ciano do protótipo)
-  primary: '#00B4D8',
+  primary: '#3538eb',
   primaryDark: '#0096B7',
   primaryGlow: 'rgba(0, 180, 216, 0.15)',
 
@@ -20,8 +21,8 @@ const colors = {
   info: '#7C83FD',
 
   // Textos
-  textPrimary: '#F0F0F5',      // Texto principal (quase branco)
-  textSecondary: '#8888A8',    // Texto secundário (cinza-azulado)
+  textPrimary: '#ffffff',      // Texto principal (quase branco)
+  textSecondary: '#e6e6e6',    // Texto secundário (cinza-azulado)
   textMuted: '#55556A',        // Texto fraco
 
   // Outros
