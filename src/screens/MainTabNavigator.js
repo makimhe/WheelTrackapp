@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Animated,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -14,7 +19,79 @@ import colors from "../styles/colors";
 
 const Tab = createBottomTabNavigator();
 
-function CustomTabBar({ state, descriptors, navigation }) {
+function TabIcon({ routeName, focused }) {
+  const scaleAnim = useRef(new Animated.Value(focused ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.spring(scaleAnim, {
+      toValue: focused ? 1 : 0,
+      useNativeDriver: true,
+      friction: 7,
+      tension: 90,
+    }).start();
+  }, [focused]);
+
+  const icons = {
+    Home: focused ? "home" : "home-outline",
+    Progresso: focused ? "analytics" : "analytics-outline",
+    Notificações: focused ? "notifications" : "notifications-outline",
+    Documentos: focused ? "document-text" : "document-text-outline",
+    Manutenção: focused ? "construct" : "construct-outline",
+  };
+
+  const scale = scaleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.12],
+  });
+
+  const translateY = scaleAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -4],
+  });
+
+  return (
+    <View style={styles.iconWrapper}>
+      <Animated.View
+        style={[
+          styles.iconBox,
+          focused && styles.activeIcon,
+          {
+            transform: [
+              {
+                scale,
+              },
+              {
+                translateY,
+              },
+            ],
+          },
+        ]}
+      >
+        <Ionicons
+          name={icons[routeName]}
+          size={20}
+          color={focused ? colors.white : colors.textMuted}
+        />
+      </Animated.View>
+
+      <Animated.View
+        style={[
+          styles.activeDot,
+          {
+            opacity: scaleAnim,
+            transform: [
+              {
+                scale: scaleAnim,
+              },
+            ],
+          },
+        ]}
+      />
+    </View>
+  );
+}
+
+function CustomTabBar({ state, navigation }) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -22,20 +99,14 @@ function CustomTabBar({ state, descriptors, navigation }) {
       pointerEvents="box-none"
       style={[
         styles.tabWrapper,
-        { bottom: insets.bottom + 14 },
+        {
+          bottom: insets.bottom + 14,
+        },
       ]}
     >
       <View style={styles.tabBar}>
         {state.routes.map((route, index) => {
           const focused = state.index === index;
-
-          const icons = {
-            Home: focused ? "home" : "home-outline",
-            Progresso: focused ? "analytics" : "analytics-outline",
-            Notificações: focused ? "notifications" : "notifications-outline",
-            Documentos: focused ? "document-text" : "document-text-outline",
-            Manutenção: focused ? "construct" : "construct-outline",
-          };
 
           const onPress = () => {
             const event = navigation.emit({
@@ -53,16 +124,10 @@ function CustomTabBar({ state, descriptors, navigation }) {
             <TouchableOpacity
               key={route.key}
               onPress={onPress}
-              activeOpacity={0.8}
+              activeOpacity={0.9}
               style={styles.tabItem}
             >
-              <View style={[styles.iconBox, focused && styles.activeIcon]}>
-                <Ionicons
-                  name={icons[route.name]}
-                  size={20}
-                  color={focused ? colors.white : colors.textMuted}
-                />
-              </View>
+              <TabIcon routeName={route.name} focused={focused} />
             </TouchableOpacity>
           );
         })}
@@ -99,9 +164,9 @@ const styles = StyleSheet.create({
 
   tabBar: {
     width: 280,
-    height: 60,
+    height: 58,
 
-    borderRadius: 30,
+    borderRadius: 70,
 
     backgroundColor: colors.surface,
 
@@ -109,23 +174,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-around",
 
-    paddingHorizontal: 10,
+    paddingHorizontal: 4,
+
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
 
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 10,
     },
-    shadowOpacity: 0.16,
-    shadowRadius: 18,
+    shadowOpacity: 0.18,
+    shadowRadius: 20,
 
-    elevation: 10,
+    elevation: 12,
   },
 
   tabItem: {
-    width: 48,
-    height: 48,
+    width: 50,
+    height: 54,
 
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  iconWrapper: {
     alignItems: "center",
     justifyContent: "center",
   },
@@ -146,11 +219,22 @@ const styles = StyleSheet.create({
     shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 5,
     },
-    shadowOpacity: 0.28,
-    shadowRadius: 8,
+    shadowOpacity: 0.32,
+    shadowRadius: 10,
 
-    elevation: 5,
+    elevation: 8,
+  },
+
+  activeDot: {
+    width: 4,
+    height: 4,
+
+    borderRadius: 2,
+
+    backgroundColor: colors.primary,
+
+    marginTop: 3,
   },
 });

@@ -1,19 +1,209 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image,
   TextInput,
+  Animated,
 } from 'react-native';
 
+import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { user, vehicles, notifications } from '../services/mockData';
 import colors from '../styles/colors';
+
+function AnimatedVehicleCard({ vehicle, navigation, index }) {
+  const progress = Math.min(vehicle.progress || 65, 100);
+
+  const [animatedProgress, setAnimatedProgress] = useState(0);
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(24)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const progressListener = progressAnim.addListener(({ value }) => {
+      setAnimatedProgress(Math.round(value));
+    });
+
+    Animated.sequence([
+      Animated.delay(index * 120),
+
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 450,
+          useNativeDriver: true,
+        }),
+
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          friction: 8,
+          tension: 70,
+          useNativeDriver: true,
+        }),
+
+        Animated.timing(progressAnim, {
+          toValue: progress,
+          duration: 1000,
+          useNativeDriver: false,
+        }),
+      ]),
+    ]).start();
+
+    return () => {
+      progressAnim.removeListener(progressListener);
+    };
+  }, []);
+
+  const progressWidth = progressAnim.interpolate({
+    inputRange: [0, 100],
+    outputRange: ['0%', '100%'],
+  });
+
+  const imageSource =
+    typeof vehicle.image === 'string'
+      ? { uri: vehicle.image }
+      : vehicle.image;
+
+  return (
+    <Animated.View
+      style={{
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }],
+      }}
+    >
+      <TouchableOpacity
+        activeOpacity={0.9}
+        style={styles.cardWrapper}
+        onPress={() =>
+          navigation.navigate('Progresso', {
+            vehicle,
+          })
+        }
+      >
+        <BlurView intensity={45} tint="light" style={styles.card}>
+          {/* TOP */}
+          <View style={styles.cardTop}>
+            <View style={styles.rating}>
+              <Ionicons
+                name="shield-checkmark"
+                size={13}
+                color="#000"
+              />
+
+              <Text style={styles.ratingText}>Blindado</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.heartButton}
+              activeOpacity={0.8}
+            >
+              <Ionicons
+                name="heart-outline"
+                size={18}
+                color={colors.textPrimary}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* IMAGE */}
+          <Animated.Image
+            source={imageSource}
+            style={[
+              styles.carImage,
+              {
+                opacity: fadeAnim,
+                transform: [
+                  {
+                    translateY: slideAnim.interpolate({
+                      inputRange: [0, 24],
+                      outputRange: [0, 12],
+                    }),
+                  },
+                ],
+              },
+            ]}
+            resizeMode="contain"
+          />
+
+          {/* INFO */}
+          <View style={styles.infoRow}>
+            <View style={styles.carInfo}>
+              <Text style={styles.carName}>{vehicle.model}</Text>
+
+              <Text style={styles.carSubtitle}>{vehicle.plate}</Text>
+            </View>
+
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusText}>{vehicle.status}</Text>
+            </View>
+          </View>
+
+          {/* PROGRESS */}
+          <View style={styles.progressSection}>
+            <View style={styles.progressHeader}>
+              <Text style={styles.progressLabel}>
+                Progresso da blindagem
+              </Text>
+
+              <Text style={styles.progressValue}>
+                {animatedProgress}%
+              </Text>
+            </View>
+
+            <View style={styles.progressBar}>
+              <Animated.View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: progressWidth,
+                  },
+                ]}
+              />
+            </View>
+          </View>
+
+          {/* BOTTOM */}
+          <View style={styles.bottomRow}>
+            <View style={styles.bottomInfo}>
+              <Text style={styles.bottomSmall}>Etapa atual</Text>
+
+              <Text
+                style={styles.bottomBig}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {vehicle.currentStep || 'Estrutura'}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.detailsButton}
+              activeOpacity={0.85}
+              onPress={() =>
+                navigation.navigate('Progresso', {
+                  vehicle,
+                })
+              }
+            >
+              <Text
+                style={styles.detailsText}
+                numberOfLines={1}
+              >
+                Ver detalhes
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </BlurView>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
 
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -42,6 +232,9 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.wrapper}>
+      <View style={styles.glowOne} />
+      <View style={styles.glowTwo} />
+
       <ScrollView
         showsVerticalScrollIndicator={false}
         bounces={false}
@@ -147,111 +340,14 @@ export default function HomeScreen({ navigation }) {
             </Text>
           </View>
         ) : (
-          filteredVehicles.map((vehicle) => {
-            const progress = Math.min(vehicle.progress || 65, 100);
-
-            return (
-              <TouchableOpacity
-                key={vehicle.id}
-                activeOpacity={0.9}
-                style={styles.card}
-                onPress={() =>
-                  navigation.navigate('Progresso', {
-                    vehicle,
-                  })
-                }
-              >
-                {/* TOP */}
-                <View style={styles.cardTop}>
-                  <View style={styles.rating}>
-                    <Ionicons
-                      name="shield-checkmark"
-                      size={13}
-                      color="#000"
-                    />
-
-                    <Text style={styles.ratingText}>Blindado</Text>
-                  </View>
-
-                  <TouchableOpacity
-                    style={styles.heartButton}
-                    activeOpacity={0.8}
-                  >
-                    <Ionicons
-                      name="heart-outline"
-                      size={18}
-                      color={colors.textPrimary}
-                    />
-                  </TouchableOpacity>
-                </View>
-
-                {/* IMAGE */}
-                <Image
-                  source={vehicle.image}
-                  style={styles.carImage}
-                  resizeMode="contain"
-                />
-
-                {/* INFO */}
-                <View style={styles.infoRow}>
-                  <View style={styles.carInfo}>
-                    <Text style={styles.carName}>{vehicle.model}</Text>
-
-                    <Text style={styles.carSubtitle}>{vehicle.plate}</Text>
-                  </View>
-
-                  <View style={styles.statusBadge}>
-                    <Text style={styles.statusText}>{vehicle.status}</Text>
-                  </View>
-                </View>
-
-                {/* PROGRESS */}
-                <View style={styles.progressSection}>
-                  <View style={styles.progressHeader}>
-                    <Text style={styles.progressLabel}>
-                      Progresso da blindagem
-                    </Text>
-
-                    <Text style={styles.progressValue}>{progress}%</Text>
-                  </View>
-
-                  <View style={styles.progressBar}>
-                    <View
-                      style={[
-                        styles.progressFill,
-                        {
-                          width: `${progress}%`,
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-
-                {/* BOTTOM */}
-                <View style={styles.bottomRow}>
-                  <View>
-                    <Text style={styles.bottomSmall}>Etapa atual</Text>
-
-                    <Text style={styles.bottomBig}>
-                      {vehicle.currentStep || 'Estrutura'}
-                    </Text>
-                  </View>
-
-                  <TouchableOpacity
-                    style={styles.detailsButton}
-                    activeOpacity={0.85}
-                    onPress={() =>
-                      navigation.navigate('Progresso', {
-                        vehicle,
-                      })
-                    }
-                  >
-                    <Text style={styles.detailsText}>Ver detalhes</Text>
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            );
-          })
+          filteredVehicles.map((vehicle, index) => (
+            <AnimatedVehicleCard
+              key={vehicle.id}
+              vehicle={vehicle}
+              navigation={navigation}
+              index={index}
+            />
+          ))
         )}
       </ScrollView>
     </View>
@@ -263,6 +359,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E9E9E9',
     paddingHorizontal: 20,
+  },
+
+  glowOne: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+
+    backgroundColor: 'rgba(53,56,235,0.16)',
+
+    top: 90,
+    right: -90,
+  },
+
+  glowTwo: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+
+    backgroundColor: 'rgba(255,255,255,0.55)',
+
+    top: 330,
+    left: -80,
   },
 
   header: {
@@ -396,26 +516,35 @@ const styles = StyleSheet.create({
     fontFamily: 'Outfit_700Bold',
   },
 
-  card: {
-    backgroundColor: '#F8F8F8',
+  cardWrapper: {
+    marginBottom: 28,
 
     borderRadius: 34,
-
-    padding: 22,
-
-    marginBottom: 28,
 
     overflow: 'hidden',
 
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 8,
+      height: 10,
     },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
+    shadowOpacity: 0.12,
+    shadowRadius: 22,
 
-    elevation: 5,
+    elevation: 8,
+  },
+
+  card: {
+    backgroundColor: 'rgba(248,248,248,0.72)',
+
+    borderRadius: 34,
+
+    padding: 22,
+
+    overflow: 'hidden',
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.58)',
   },
 
   cardTop: {
@@ -430,12 +559,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
 
-    backgroundColor: '#FFF',
+    backgroundColor: 'rgba(255,255,255,0.68)',
 
     borderRadius: 999,
 
     paddingHorizontal: 12,
     paddingVertical: 7,
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.65)',
   },
 
   ratingText: {
@@ -453,10 +585,13 @@ const styles = StyleSheet.create({
 
     borderRadius: 20,
 
-    backgroundColor: '#FFF',
+    backgroundColor: 'rgba(255,255,255,0.68)',
 
     alignItems: 'center',
     justifyContent: 'center',
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.65)',
   },
 
   carImage: {
@@ -540,11 +675,11 @@ const styles = StyleSheet.create({
 
   progressBar: {
     width: '100%',
-    height: 8,
+    height: 9,
 
     borderRadius: 999,
 
-    backgroundColor: '#DDD',
+    backgroundColor: 'rgba(0,0,0,0.12)',
 
     overflow: 'hidden',
   },
@@ -561,8 +696,15 @@ const styles = StyleSheet.create({
     marginTop: 27,
 
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-end',
+
+    width: '100%',
+  },
+
+  bottomInfo: {
+    flex: 1,
+    maxWidth: '58%',
+    paddingRight: 8,
   },
 
   bottomSmall: {
@@ -582,30 +724,38 @@ const styles = StyleSheet.create({
   },
 
   detailsButton: {
+    width: 112,
+    height: 46,
+
     backgroundColor: '#111',
 
-    borderRadius: 25,
+    borderRadius: 27,
 
-    paddingHorizontal: 10,
-    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    marginLeft: 'auto',
   },
 
   detailsText: {
     color: '#FFF',
 
-    fontSize: 13,
+    fontSize: 12,
 
     fontFamily: 'Outfit_600SemiBold',
   },
 
   emptyBox: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: 'rgba(248,248,248,0.8)',
 
     borderRadius: 28,
 
     padding: 28,
 
     alignItems: 'center',
+
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.58)',
 
     shadowColor: '#000',
     shadowOffset: {
