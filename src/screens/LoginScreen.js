@@ -1,6 +1,6 @@
 // Tela de Login - WheelTrack
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   View,
@@ -14,30 +14,157 @@ import {
   Switch,
   ActivityIndicator,
   Alert,
+  Animated,
 } from "react-native";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 
 import colors from "../styles/colors";
+import fonts from "../styles/fonts";
 
 // Quando tiver backend real, troca para false
 const USE_MOCK_LOGIN = true;
 
-// Quando tiver backend real, coloca o endereço aqui
+// Quando tiver backend real, coloca o endereço da API aqui
 const API_URL = "http://SEU_IP_LOCAL:3000";
 
 export default function LoginScreen({ navigation }) {
+  // Guarda os dados digitados pelo usuário
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  // Controla se a senha aparece ou fica escondida
   const [showPassword, setShowPassword] = useState(false);
+
+  // Controla o botão "Manter conectado"
   const [keepConnected, setKeepConnected] = useState(false);
 
+  // Controla o carregamento do botão de login
   const [isLoading, setIsLoading] = useState(false);
 
   const insets = useSafeAreaInsets();
 
+  // Animações do logo
+  const logoOpacity = useRef(new Animated.Value(0)).current;
+  const logoTranslate = useRef(new Animated.Value(-18)).current;
+
+  // Animações do card principal
+  const cardOpacity = useRef(new Animated.Value(0)).current;
+  const cardTranslate = useRef(new Animated.Value(42)).current;
+
+  // Animações dos campos
+  const emailOpacity = useRef(new Animated.Value(0)).current;
+  const emailTranslate = useRef(new Animated.Value(18)).current;
+
+  const passwordOpacity = useRef(new Animated.Value(0)).current;
+  const passwordTranslate = useRef(new Animated.Value(18)).current;
+
+  // Animações do botão
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const buttonPulse = useRef(new Animated.Value(1)).current;
+
+  // Animação do ícone do olho
+  const eyeScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    // Entrada animada do logo, card e inputs
+    Animated.sequence([
+      Animated.parallel([
+        Animated.timing(logoOpacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+
+        Animated.spring(logoTranslate, {
+          toValue: 0,
+          friction: 8,
+          tension: 70,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.parallel([
+        Animated.timing(cardOpacity, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+
+        Animated.spring(cardTranslate, {
+          toValue: 0,
+          friction: 8,
+          tension: 70,
+          useNativeDriver: true,
+        }),
+      ]),
+
+      Animated.stagger(120, [
+        Animated.parallel([
+          Animated.timing(emailOpacity, {
+            toValue: 1,
+            duration: 360,
+            useNativeDriver: true,
+          }),
+
+          Animated.spring(emailTranslate, {
+            toValue: 0,
+            friction: 8,
+            tension: 70,
+            useNativeDriver: true,
+          }),
+        ]),
+
+        Animated.parallel([
+          Animated.timing(passwordOpacity, {
+            toValue: 1,
+            duration: 360,
+            useNativeDriver: true,
+          }),
+
+          Animated.spring(passwordTranslate, {
+            toValue: 0,
+            friction: 8,
+            tension: 70,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]),
+    ]).start();
+  }, []);
+
+  useEffect(() => {
+    // Faz o botão respirar levemente quando não está carregando
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(buttonPulse, {
+          toValue: 1.025,
+          duration: 900,
+          useNativeDriver: true,
+        }),
+
+        Animated.timing(buttonPulse, {
+          toValue: 1,
+          duration: 900,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
+    if (!isLoading) {
+      pulseAnimation.start();
+    } else {
+      buttonPulse.stopAnimation();
+      buttonPulse.setValue(1);
+    }
+
+    return () => {
+      pulseAnimation.stop();
+    };
+  }, [isLoading]);
+
+  // Valida os campos antes de tentar fazer login
   const validateFields = () => {
     const cleanEmail = email.trim();
 
@@ -71,6 +198,7 @@ export default function LoginScreen({ navigation }) {
     return true;
   };
 
+  // Login falso para testar o app sem backend
   const mockLogin = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
@@ -84,6 +212,7 @@ export default function LoginScreen({ navigation }) {
     };
   };
 
+  // Login real para usar quando o backend estiver pronto
   const realLogin = async () => {
     const response = await fetch(`${API_URL}/login`, {
       method: "POST",
@@ -106,6 +235,7 @@ export default function LoginScreen({ navigation }) {
     return data;
   };
 
+  // Faz o login e manda o usuário para a tela principal
   const handleLogin = async () => {
     if (!validateFields()) {
       return;
@@ -114,9 +244,7 @@ export default function LoginScreen({ navigation }) {
     setIsLoading(true);
 
     try {
-      const data = USE_MOCK_LOGIN
-        ? await mockLogin()
-        : await realLogin();
+      const data = USE_MOCK_LOGIN ? await mockLogin() : await realLogin();
 
       if (data.success || data.token) {
         navigation.replace("Main");
@@ -136,6 +264,47 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  // Diminui o botão ao pressionar
+  const handleButtonPressIn = () => {
+    Animated.spring(buttonScale, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      friction: 5,
+      tension: 120,
+    }).start();
+  };
+
+  // Volta o botão ao tamanho normal
+  const handleButtonPressOut = () => {
+    Animated.spring(buttonScale, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 5,
+      tension: 120,
+    }).start();
+  };
+
+  // Mostra ou esconde a senha
+  const togglePasswordVisibility = () => {
+    Animated.sequence([
+      Animated.spring(eyeScale, {
+        toValue: 0.78,
+        useNativeDriver: true,
+        friction: 5,
+        tension: 150,
+      }),
+
+      Animated.spring(eyeScale, {
+        toValue: 1,
+        useNativeDriver: true,
+        friction: 5,
+        tension: 150,
+      }),
+    ]).start();
+
+    setShowPassword(!showPassword);
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.wrapper}
@@ -151,17 +320,55 @@ export default function LoginScreen({ navigation }) {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        {/* TOPO */}
-        <View style={styles.logoSection}>
-          <Text style={styles.logoText}>CARBON</Text>
-        </View>
+        {/* Topo com logo do app */}
+        <Animated.View
+          style={[
+            styles.logoSection,
+            {
+              opacity: logoOpacity,
+              transform: [{ translateY: logoTranslate }],
+            },
+          ]}
+        >
+          <View style={styles.logoGlow} />
 
-        {/* CARD */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Bem Vindo!</Text>
+          <Text style={styles.logoText}>wheeltrack</Text>
 
-          {/* EMAIL */}
-          <View style={styles.inputGroup}>
+          <Text style={styles.logoSubText}>
+            Proteção inteligente para seu veículo
+          </Text>
+        </Animated.View>
+
+        {/* Card do formulário de login */}
+        <Animated.View
+          style={[
+            styles.card,
+            {
+              opacity: cardOpacity,
+              transform: [{ translateY: cardTranslate }],
+            },
+          ]}
+        >
+          <View style={styles.cardHeader}>
+            <View>
+              <Text style={styles.cardTitle}>Bem Vindo!</Text>
+
+              <Text style={styles.cardSubtitle}>
+                Entre para acompanhar sua blindagem
+              </Text>
+            </View>
+          </View>
+
+          {/* Campo de email */}
+          <Animated.View
+            style={[
+              styles.inputGroup,
+              {
+                opacity: emailOpacity,
+                transform: [{ translateY: emailTranslate }],
+              },
+            ]}
+          >
             <Text style={styles.inputLabel}>Email</Text>
 
             <View style={styles.inputWrapper}>
@@ -185,10 +392,18 @@ export default function LoginScreen({ navigation }) {
                 returnKeyType="next"
               />
             </View>
-          </View>
+          </Animated.View>
 
-          {/* SENHA */}
-          <View style={styles.inputGroup}>
+          {/* Campo de senha */}
+          <Animated.View
+            style={[
+              styles.inputGroup,
+              {
+                opacity: passwordOpacity,
+                transform: [{ translateY: passwordTranslate }],
+              },
+            ]}
+          >
             <Text style={styles.inputLabel}>Senha</Text>
 
             <View style={styles.inputWrapper}>
@@ -214,21 +429,27 @@ export default function LoginScreen({ navigation }) {
               />
 
               <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
+                onPress={togglePasswordVisibility}
                 disabled={isLoading}
                 style={styles.eyeButton}
                 activeOpacity={0.7}
               >
-                <Ionicons
-                  name={showPassword ? "eye-off-outline" : "eye-outline"}
-                  size={20}
-                  color={colors.textMuted}
-                />
+                <Animated.View
+                  style={{
+                    transform: [{ scale: eyeScale }],
+                  }}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={20}
+                    color={colors.textMuted}
+                  />
+                </Animated.View>
               </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
 
-          {/* SWITCH */}
+          {/* Opção de manter conectado */}
           <View style={styles.keepRow}>
             <Text style={styles.keepText}>Manter conectado</Text>
 
@@ -241,40 +462,57 @@ export default function LoginScreen({ navigation }) {
                 true: colors.primary + "80",
               }}
               thumbColor={
-                keepConnected
-                  ? colors.primary
-                  : colors.textMuted
+                keepConnected ? colors.primary : colors.textMuted
               }
             />
           </View>
 
-          {/* BOTÃO */}
-          <TouchableOpacity
-            style={[
-              styles.loginButton,
-              isLoading && {
-                opacity: 0.75,
-              },
-            ]}
-            onPress={handleLogin}
-            disabled={isLoading}
-            activeOpacity={0.85}
+          {/* Botão de entrar */}
+          <Animated.View
+            style={{
+              transform: [
+                { scale: buttonScale },
+                { scale: buttonPulse },
+              ],
+            }}
           >
-            {isLoading ? (
-              <ActivityIndicator
-                color={colors.background}
-                size="small"
-              />
-            ) : (
-              <Text style={styles.loginButtonText}>Entrar</Text>
-            )}
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.loginButton,
+                isLoading && {
+                  opacity: 0.75,
+                },
+              ]}
+              onPress={handleLogin}
+              onPressIn={handleButtonPressIn}
+              onPressOut={handleButtonPressOut}
+              disabled={isLoading}
+              activeOpacity={0.9}
+            >
+              {isLoading ? (
+                <ActivityIndicator
+                  color={colors.background}
+                  size="small"
+                />
+              ) : (
+                <View style={styles.loginButtonContent}>
+                  <Text style={styles.loginButtonText}>Entrar</Text>
 
-          {/* FOOTER */}
+                  <Ionicons
+                    name="arrow-forward"
+                    size={18}
+                    color={colors.white}
+                  />
+                </View>
+              )}
+            </TouchableOpacity>
+          </Animated.View>
+
+          {/* Frase final */}
           <Text style={styles.footer}>
             Choose Your Way, We Make Safe
           </Text>
-        </View>
+        </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -299,21 +537,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  logoGlow: {
+    position: "absolute",
+
+    width: 120,
+    height: 120,
+
+    borderRadius: 60,
+
+    backgroundColor: colors.primary + "18",
+  },
+
   logoText: {
-    fontSize: 32,
+    fontSize: 34,
 
     color: colors.primary,
 
-    letterSpacing: 3,
+    letterSpacing: 4,
 
-    fontFamily: "Outfit_700Bold",
+    fontFamily: fonts.titleExtra,
   },
 
-  tagline: {
-    fontSize: 10,
+  logoSubText: {
+    marginTop: 8,
+
+    fontSize: 12,
+
     color: colors.textSecondary,
-    marginTop: 4,
-    letterSpacing: 0.5,
+
+    letterSpacing: 0.4,
+
+    fontFamily: fonts.body,
   },
 
   card: {
@@ -346,16 +600,32 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
 
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+
+    marginBottom: 34,
+  },
+
   cardTitle: {
     fontSize: 28,
 
     color: colors.white,
 
-    marginBottom: 36,
-
     letterSpacing: -1,
 
-    fontFamily: "Outfit_600SemiBold",
+    fontFamily: fonts.title,
+  },
+
+  cardSubtitle: {
+    marginTop: 5,
+
+    fontSize: 13,
+
+    color: colors.textSecondary,
+
+    fontFamily: fonts.body,
   },
 
   inputGroup: {
@@ -371,7 +641,7 @@ const styles = StyleSheet.create({
 
     letterSpacing: 0.3,
 
-    fontFamily: "Outfit_600SemiBold",
+    fontFamily: fonts.subtitle,
   },
 
   inputWrapper: {
@@ -413,7 +683,7 @@ const styles = StyleSheet.create({
 
     color: colors.textPrimary,
 
-    fontFamily: "Outfit_400Regular",
+    fontFamily: fonts.body,
   },
 
   eyeButton: {
@@ -434,7 +704,7 @@ const styles = StyleSheet.create({
 
     color: colors.textSecondary,
 
-    fontFamily: "Outfit_400Regular",
+    fontFamily: fonts.body,
   },
 
   loginButton: {
@@ -462,6 +732,14 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 
+  loginButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+
+    gap: 8,
+  },
+
   loginButtonText: {
     color: colors.white,
 
@@ -469,7 +747,7 @@ const styles = StyleSheet.create({
 
     letterSpacing: 0.5,
 
-    fontFamily: "Outfit_700Bold",
+    fontFamily: fonts.button,
   },
 
   footer: {
@@ -481,6 +759,6 @@ const styles = StyleSheet.create({
 
     color: colors.textMuted,
 
-    fontFamily: "Outfit_400Regular",
+    fontFamily: fonts.body,
   },
 });
