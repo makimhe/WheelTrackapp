@@ -1,34 +1,63 @@
-// Paleta de cores do WheelTrack
-// Inspirado no protótipo: tema escuro com azul-ciano como cor principal
+// Paleta central do app
+// Todas as cores do projeto devem vir daqui
 
 const colors = {
-  // Fundos
-  background: '#e0e0e0f6',       // Fundo principal (quase preto)
-  surface: '#1b1b1bf6',    
-  surface2: '#141414',      // Cards e superfícies
-  surfaceLight: 'rgba(0, 0, 0, 0.85)',     // Cards um pouco mais claros
-  border: '#b3b3b3',           // Bordas sutis
+  // Fundo geral das telas
+  background: '#F3F1FA',
 
-  // Cor principal (azul-ciano do protótipo)
-  primary: '#3538eb',
-  primaryDark: '#0096B7',
-  primaryGlow: 'rgba(0, 180, 216, 0.15)',
+  // Fundo escuro usado em cards premium e botões principais
+  backgroundDark: '#171827',
 
-  // Status
-  success: '#00C896',
-  warning: '#FFB347',
-  danger: '#FF6B6B',
-  info: '#7C83FD',
+  // Cards e superfícies claras
+  surface: '#FFFFFF',
+  surfaceSoft: '#F8F7FC',
+  surfaceMuted: '#E9E6F3',
 
-  // Textos
-  textPrimary: '#ffffff',      // Texto principal (quase branco)
-  textSecondary: '#e6e6e6',    // Texto secundário (cinza-azulado)
-  textMuted: '#55556A',        // Texto fraco
+  // Cards e superfícies escuras
+  surfaceDark: '#202233',
+  surfaceDarkSoft: '#26283B',
 
-  // Outros
+  // Cor principal do app
+  primary: '#A7F04A',
+  primaryDark: '#7CCB2F',
+  primarySoft: 'rgba(167, 240, 74, 0.14)',
+  primaryGlow: 'rgba(167, 240, 74, 0.22)',
+
+  // Cor secundária escura
+  secondary: '#24243D',
+  secondarySoft: '#353552',
+
+  // Cor de destaque/alerta visual
+  accent: '#F25F5C',
+  accentDark: '#D94D4A',
+  accentSoft: 'rgba(242, 95, 92, 0.12)',
+
+  // Textos em fundo claro
+  textPrimary: '#1E1E32',
+  textSecondary: '#6D6A86',
+  textMuted: '#A7A2BC',
+
+  // Textos em fundo escuro
+  textLight: '#FFFFFF',
+  textLightMuted: '#C9C4DC',
+
+  // Bordas
+  border: '#DFDCEB',
+  borderDark: '#303145',
+
+  // Estados
+  success: '#98c994',
+  warning: '#F5B84B',
+  danger: '#F25F5C',
+
+  // Cores base
   white: '#FFFFFF',
-  black: '#000000',
-  overlay: 'rgba(0, 0, 0, 0.6)',
+  black: '#171827',
+
+  // Transparências úteis
+  whiteSoft: 'rgba(255, 255, 255, 0.14)',
+  blackSoft: 'rgba(23, 24, 39, 0.08)',
+  shadow: '#000000',
 };
 
 export default colors;

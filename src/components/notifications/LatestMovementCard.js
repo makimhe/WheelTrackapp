@@ -3,6 +3,7 @@ import React from 'react';
 import {
   View,
   Text,
+ TouchableOpacity,
   StyleSheet,
 } from 'react-native';
 
@@ -11,74 +12,120 @@ import { Ionicons } from '@expo/vector-icons';
 import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
 
-export default function LatestMovementCard({ notification }) {
-  if (!notification) {
-    return null;
-  }
-
+export default function NotificationsHeader({
+  unreadCount,
+  onBack,
+}) {
   return (
-    <View style={styles.highlightCard}>
-      <View style={styles.highlightIcon}>
+    <View style={styles.header}>
+      {/* Botão de voltar */}
+      <TouchableOpacity
+        style={styles.backButton}
+        activeOpacity={0.8}
+        onPress={onBack}
+      >
         <Ionicons
-          name="sparkles-outline"
-          size={20}
-          color={colors.primary}
+          name="chevron-back"
+          size={22}
+          color={colors.textPrimary}
         />
+      </TouchableOpacity>
+
+      {/* Título da tela */}
+      <View style={styles.headerTextBox}>
+        <Text style={styles.headerSmall}>
+          Central de atualizações
+        </Text>
+
+        <Text style={styles.headerTitle}>
+          Notificações
+        </Text>
       </View>
 
-      <View style={styles.highlightContent}>
-        <Text style={styles.highlightTitle}>
-          Última movimentação
-        </Text>
+      {/* Ícone da tela */}
+      <View style={styles.headerIcon}>
+        <Ionicons
+          name="notifications-outline"
+          size={22}
+          color={colors.textLight}
+        />
 
-        <Text
-          style={styles.highlightText}
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          {notification.vehicle} · {notification.step}
-        </Text>
+        {unreadCount > 0 && (
+          <View style={styles.headerDot} />
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  highlightCard: {
-    backgroundColor: '#111',
-    borderRadius: 28,
-    padding: 16,
-    marginBottom: 20,
-
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 24,
   },
 
-  highlightIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FFF',
+  backButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 4,
   },
 
-  highlightContent: {
+  headerTextBox: {
     flex: 1,
+    marginLeft: 14,
   },
 
-  highlightTitle: {
+  headerSmall: {
     fontSize: 13,
-    color: '#BDBDBD',
-    fontFamily: fonts.subtitle,
+    color: colors.textSecondary,
+    fontFamily: fonts.body,
   },
 
-  highlightText: {
-    fontSize: 15,
-    color: '#FFF',
-    marginTop: 3,
-    lineHeight: 20,
-    fontFamily: fonts.titleMedium,
+  headerTitle: {
+    fontSize: 30,
+    color: colors.textPrimary,
+    marginTop: 2,
+    fontFamily: fonts.titleExtra,
+  },
+
+  headerIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.black,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+
+  headerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: colors.danger,
+    position: 'absolute',
+    top: 12,
+    right: 12,
   },
 });

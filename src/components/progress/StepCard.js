@@ -247,15 +247,14 @@ function getStatusLabel(status) {
 
   return 'Pendente';
 }
-
 const styles = StyleSheet.create({
   stepCard: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 26,
     padding: 16,
     marginBottom: 13,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 6,
@@ -267,11 +266,11 @@ const styles = StyleSheet.create({
 
   stepCardActive: {
     borderWidth: 1,
-    borderColor: 'rgba(53,56,235,0.24)',
+    borderColor: colors.primaryBorder,
   },
 
   stepCardCompleted: {
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.surface,
   },
 
   stepTop: {
@@ -283,9 +282,9 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#E3E3E3',
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -297,8 +296,8 @@ const styles = StyleSheet.create({
   },
 
   stepIconActive: {
-    backgroundColor: '#111',
-    borderColor: '#111',
+    backgroundColor: colors.black,
+    borderColor: colors.black,
   },
 
   stepTextBox: {
@@ -308,28 +307,28 @@ const styles = StyleSheet.create({
 
   stepTitle: {
     fontSize: 15,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
 
   stepTitlePending: {
-    color: '#999',
+    color: colors.textMuted,
   },
 
   stepDescription: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 3,
     lineHeight: 17,
     fontFamily: fonts.body,
   },
 
   stepDescriptionPending: {
-    color: '#AAA',
+    color: colors.textMuted,
   },
 
   stepStatusPill: {
-    backgroundColor: '#EFEFEF',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -340,17 +339,17 @@ const styles = StyleSheet.create({
   },
 
   stepStatusActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
   },
 
   stepStatusText: {
     fontSize: 10,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.button,
   },
 
   stepStatusTextLight: {
-    color: '#FFF',
+    color: colors.textLight,
   },
 
   stepBottom: {
@@ -367,19 +366,19 @@ const styles = StyleSheet.create({
 
   substepMiniText: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
 
   substepMiniTextActive: {
-    color: colors.primary,
+    color: colors.primaryDark,
   },
 
   stepDetails: {
     marginTop: 14,
     borderTopWidth: 1,
-    borderTopColor: '#ECECEC',
+    borderTopColor: colors.border,
     paddingTop: 13,
   },
 
@@ -394,7 +393,7 @@ const styles = StyleSheet.create({
     height: 18,
     borderRadius: 9,
     marginTop: 1,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 9,
@@ -408,12 +407,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 12,
     lineHeight: 17,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   substepTextDone: {
-    color: '#333',
+    color: colors.textPrimary,
     fontFamily: fonts.bodySemiBold,
   },
 });

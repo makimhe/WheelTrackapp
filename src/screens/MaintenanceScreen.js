@@ -58,11 +58,17 @@ function InfoCard({ icon, label, value, valueColor, index }) {
       ]}
     >
       <View style={styles.infoIcon}>
-        <Ionicons name={icon} size={18} color="#FFF" />
+        <Ionicons
+          name={icon}
+          size={18}
+          color={colors.textLight}
+        />
       </View>
 
       <View style={styles.infoTextBox}>
-        <Text style={styles.infoLabel}>{label}</Text>
+        <Text style={styles.infoLabel}>
+          {label}
+        </Text>
 
         <Text
           style={[
@@ -211,17 +217,29 @@ export default function MaintenanceScreen({ navigation }) {
             activeOpacity={0.8}
             onPress={() => navigation.navigate('Home')}
           >
-            <Ionicons name="chevron-back" size={22} color="#111" />
+            <Ionicons
+              name="chevron-back"
+              size={22}
+              color={colors.textPrimary}
+            />
           </TouchableOpacity>
 
           <View style={styles.headerTextBox}>
-            <Text style={styles.headerSmall}>Cuidados da blindagem</Text>
+            <Text style={styles.headerSmall}>
+              Cuidados da blindagem
+            </Text>
 
-            <Text style={styles.headerTitle}>Manutenção</Text>
+            <Text style={styles.headerTitle}>
+              Manutenção
+            </Text>
           </View>
 
           <View style={styles.headerIcon}>
-            <Ionicons name="construct-outline" size={22} color="#FFF" />
+            <Ionicons
+              name="construct-outline"
+              size={22}
+              color={colors.textLight}
+            />
           </View>
         </Animated.View>
 
@@ -317,7 +335,7 @@ export default function MaintenanceScreen({ navigation }) {
             icon="time-outline"
             label="Próxima revisão"
             value={maintenance.nextRevision}
-            valueColor={colors.primary}
+            valueColor={colors.primaryDark}
           />
 
           <InfoCard
@@ -325,15 +343,19 @@ export default function MaintenanceScreen({ navigation }) {
             icon="shield-checkmark-outline"
             label="Garantia"
             value={maintenance.warrantyStatus}
-            valueColor={colors.primary}
+            valueColor={colors.primaryDark}
           />
         </View>
 
         {/* Título da área de ações */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Ações disponíveis</Text>
+          <Text style={styles.sectionTitle}>
+            Ações disponíveis
+          </Text>
 
-          <Text style={styles.sectionHint}>Escolha uma opção</Text>
+          <Text style={styles.sectionHint}>
+            Escolha uma opção
+          </Text>
         </View>
 
         {/* Botão principal de agendamento */}
@@ -343,7 +365,11 @@ export default function MaintenanceScreen({ navigation }) {
           onPress={handleSchedule}
         >
           <View style={styles.primaryButtonIcon}>
-            <Ionicons name="calendar" size={20} color="#FFF" />
+            <Ionicons
+              name="calendar"
+              size={20}
+              color={colors.black}
+            />
           </View>
 
           <View style={styles.primaryButtonTextBox}>
@@ -382,7 +408,7 @@ export default function MaintenanceScreen({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.actionCard}
+            style={styles.actionCardLast}
             activeOpacity={0.88}
             onPress={handleEmergency}
           >
@@ -428,7 +454,7 @@ export default function MaintenanceScreen({ navigation }) {
           <Ionicons
             name="logo-whatsapp"
             size={19}
-            color="#FFF"
+            color={colors.textLight}
           />
 
           <Text style={styles.whatsappText}>
@@ -443,33 +469,25 @@ export default function MaintenanceScreen({ navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: colors.background,
   },
 
   glowOne: {
     position: 'absolute',
-
     width: 220,
     height: 220,
-
     borderRadius: 110,
-
-    backgroundColor: 'rgba(53,56,235,0.13)',
-
+    backgroundColor: colors.primarySoft,
     top: 90,
     right: -100,
   },
 
   glowTwo: {
     position: 'absolute',
-
     width: 180,
     height: 180,
-
     borderRadius: 90,
-
-    backgroundColor: 'rgba(255,255,255,0.55)',
-
+    backgroundColor: colors.whiteSoft,
     top: 360,
     left: -90,
   },
@@ -481,95 +499,76 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-
     marginBottom: 24,
   },
 
   backButton: {
     width: 46,
     height: 46,
-
     borderRadius: 23,
-
-    backgroundColor: '#FFF',
-
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
     },
     shadowOpacity: 0.06,
     shadowRadius: 10,
-
     elevation: 4,
   },
 
   headerTextBox: {
     flex: 1,
-
     marginLeft: 14,
   },
 
   headerSmall: {
     fontSize: 13,
-
-    color: '#555',
-
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   headerTitle: {
     fontSize: 30,
-
-    color: '#111',
-
+    color: colors.textPrimary,
     marginTop: 2,
-
     fontFamily: fonts.titleExtra,
   },
 
   headerIcon: {
     width: 48,
     height: 48,
-
     borderRadius: 24,
-
-    backgroundColor: '#111',
-
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
     },
     shadowOpacity: 0.06,
     shadowRadius: 10,
-
     elevation: 4,
   },
 
   heroCard: {
-    backgroundColor: '#F8F8F8',
-
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 34,
-
     padding: 22,
-
     marginBottom: 18,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
     },
     shadowOpacity: 0.07,
     shadowRadius: 18,
-
     elevation: 5,
   },
 
@@ -577,7 +576,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-
     marginBottom: 24,
   },
 
@@ -588,55 +586,39 @@ const styles = StyleSheet.create({
 
   heroTitle: {
     fontSize: 24,
-
-    color: '#111',
-
+    color: colors.textPrimary,
     lineHeight: 30,
-
     fontFamily: fonts.title,
   },
 
   heroSubtitle: {
     fontSize: 13,
-
-    color: '#777',
-
+    color: colors.textSecondary,
     lineHeight: 18,
-
     marginTop: 6,
-
     fontFamily: fonts.body,
   },
 
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-
-    backgroundColor: 'rgba(53,56,235,0.10)',
-
+    backgroundColor: colors.primarySoft,
     borderRadius: 999,
-
     paddingHorizontal: 11,
     paddingVertical: 7,
   },
 
   statusBadgeText: {
     fontSize: 12,
-
-    color: colors.primary,
-
+    color: colors.primaryDark,
     marginLeft: 5,
-
     fontFamily: fonts.subtitle,
   },
 
   integrityBox: {
-    backgroundColor: '#FFF',
-
+    backgroundColor: colors.surface,
     borderRadius: 24,
-
     padding: 16,
-
     marginBottom: 14,
   },
 
@@ -644,77 +626,56 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-
     marginBottom: 12,
   },
 
   integrityLabel: {
     fontSize: 15,
-
-    color: '#111',
-
+    color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
 
   integritySub: {
     fontSize: 12,
-
-    color: '#777',
-
+    color: colors.textSecondary,
     marginTop: 3,
-
     fontFamily: fonts.body,
   },
 
   integrityValue: {
     fontSize: 24,
-
-    color: colors.primary,
-
+    color: colors.primaryDark,
     fontFamily: fonts.title,
   },
 
   integrityBar: {
     width: '100%',
     height: 9,
-
     borderRadius: 999,
-
-    backgroundColor: '#E5E5E5',
-
+    backgroundColor: colors.surfaceMuted,
     overflow: 'hidden',
   },
 
   integrityFill: {
     height: '100%',
-
     borderRadius: 999,
-
     backgroundColor: colors.primary,
   },
 
   approvalTag: {
     flexDirection: 'row',
     alignItems: 'center',
-
-    backgroundColor: 'rgba(53,56,235,0.10)',
-
+    backgroundColor: colors.primarySoft,
     borderRadius: 18,
-
     padding: 12,
   },
 
   approvalText: {
     flex: 1,
-
     fontSize: 13,
-
-    color: colors.primary,
-
+    color: colors.primaryDark,
     marginLeft: 8,
-
     lineHeight: 18,
-
     fontFamily: fonts.subtitle,
   },
 
@@ -725,37 +686,28 @@ const styles = StyleSheet.create({
   infoCard: {
     flexDirection: 'row',
     alignItems: 'center',
-
-    backgroundColor: '#F8F8F8',
-
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 24,
-
     padding: 16,
-
     marginBottom: 12,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 6,
     },
     shadowOpacity: 0.05,
     shadowRadius: 14,
-
     elevation: 3,
   },
 
   infoIcon: {
     width: 42,
     height: 42,
-
     borderRadius: 21,
-
-    backgroundColor: '#111',
-
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
-
     marginRight: 12,
   },
 
@@ -765,19 +717,14 @@ const styles = StyleSheet.create({
 
   infoLabel: {
     fontSize: 12,
-
-    color: '#777',
-
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   infoValue: {
     fontSize: 16,
-
-    color: '#111',
-
+    color: colors.textPrimary,
     marginTop: 2,
-
     fontFamily: fonts.subtitle,
   },
 
@@ -785,60 +732,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
     marginBottom: 14,
   },
 
   sectionTitle: {
     fontSize: 20,
-
-    color: '#111',
-
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   sectionHint: {
     fontSize: 12,
-
-    color: '#777',
-
+    color: colors.textSecondary,
     fontFamily: fonts.bodySemiBold,
   },
 
   primaryButton: {
     flexDirection: 'row',
     alignItems: 'center',
-
-    backgroundColor: '#111',
-
+    backgroundColor: colors.black,
     borderRadius: 28,
-
     padding: 16,
-
     marginBottom: 14,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
     },
     shadowOpacity: 0.08,
     shadowRadius: 16,
-
     elevation: 5,
   },
 
   primaryButtonIcon: {
     width: 44,
     height: 44,
-
     borderRadius: 22,
-
     backgroundColor: colors.primary,
-
     alignItems: 'center',
     justifyContent: 'center',
-
     marginRight: 12,
   },
 
@@ -848,112 +781,98 @@ const styles = StyleSheet.create({
 
   primaryButtonText: {
     fontSize: 16,
-
-    color: '#FFF',
-
+    color: colors.textLight,
     fontFamily: fonts.button,
   },
 
   primaryButtonSub: {
     fontSize: 12,
-
-    color: '#CFCFCF',
-
+    color: colors.textLightMuted,
     marginTop: 2,
-
     fontFamily: fonts.body,
   },
 
   actionGrid: {
     flexDirection: 'row',
-
     marginBottom: 14,
   },
 
   actionCard: {
     flex: 1,
-
-    backgroundColor: '#F8F8F8',
-
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 26,
-
     padding: 15,
-
     marginRight: 10,
-
     minHeight: 140,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 6,
     },
     shadowOpacity: 0.05,
     shadowRadius: 14,
+    elevation: 3,
+  },
 
+  actionCardLast: {
+    flex: 1,
+    backgroundColor: colors.surfaceSoft,
+    borderRadius: 26,
+    padding: 15,
+    minHeight: 140,
+
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 14,
     elevation: 3,
   },
 
   actionIconWarning: {
     width: 40,
     height: 40,
-
     borderRadius: 20,
-
-    backgroundColor: 'rgba(245,158,11,0.14)',
-
+    backgroundColor: colors.warningSoft,
     alignItems: 'center',
     justifyContent: 'center',
-
     marginBottom: 12,
   },
 
   actionIconDanger: {
     width: 40,
     height: 40,
-
     borderRadius: 20,
-
-    backgroundColor: 'rgba(239,68,68,0.13)',
-
+    backgroundColor: colors.accentSoft,
     alignItems: 'center',
     justifyContent: 'center',
-
     marginBottom: 12,
   },
 
   actionTitle: {
     fontSize: 14,
-
-    color: '#111',
-
+    color: colors.textPrimary,
     lineHeight: 18,
-
     fontFamily: fonts.subtitle,
   },
 
   actionText: {
     fontSize: 12,
-
-    color: '#777',
-
+    color: colors.textSecondary,
     lineHeight: 17,
-
     marginTop: 6,
-
     fontFamily: fonts.body,
   },
 
   warningCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-
-    backgroundColor: 'rgba(245,158,11,0.13)',
-
+    backgroundColor: colors.warningSoft,
     borderRadius: 22,
-
     padding: 14,
-
     marginBottom: 14,
   },
 
@@ -964,37 +883,26 @@ const styles = StyleSheet.create({
 
   warningText: {
     flex: 1,
-
     fontSize: 12,
-
     color: colors.warning,
-
     lineHeight: 18,
-
     fontFamily: fonts.subtitle,
   },
 
   whatsappButton: {
     height: 56,
-
     borderRadius: 28,
-
-    backgroundColor: '#111',
-
+    backgroundColor: colors.black,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     marginTop: 4,
   },
 
   whatsappText: {
     fontSize: 15,
-
-    color: '#FFF',
-
+    color: colors.textLight,
     marginLeft: 8,
-
     fontFamily: fonts.button,
   },
 });

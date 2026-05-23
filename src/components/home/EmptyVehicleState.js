@@ -8,6 +8,7 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 
+import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
 
 export default function EmptyVehicleState() {
@@ -16,7 +17,7 @@ export default function EmptyVehicleState() {
       <Ionicons
         name="car-outline"
         size={32}
-        color="#999"
+        color={colors.textMuted}
       />
 
       <Text style={styles.emptyTitle}>
@@ -32,12 +33,12 @@ export default function EmptyVehicleState() {
 
 const styles = StyleSheet.create({
   emptyBox: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 28,
     padding: 28,
     alignItems: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -49,14 +50,14 @@ const styles = StyleSheet.create({
 
   emptyTitle: {
     fontSize: 18,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 12,
     fontFamily: fonts.title,
   },
 
   emptyText: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 4,
     textAlign: 'center',
     fontFamily: fonts.body,

@@ -10,6 +10,7 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 
+import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
 
 export default function ProgressHeader({
@@ -33,18 +34,31 @@ export default function ProgressHeader({
         activeOpacity={0.85}
         onPress={onBack}
       >
-        <Ionicons name="chevron-back" size={22} color="#111" />
+        <Ionicons
+          name="chevron-back"
+          size={22}
+          color={colors.textPrimary}
+        />
       </TouchableOpacity>
 
       {/* Título da tela */}
       <View style={styles.headerTextBox}>
-        <Text style={styles.headerSmall}>Acompanhamento</Text>
-        <Text style={styles.headerTitle}>Progresso</Text>
+        <Text style={styles.headerSmall}>
+          Acompanhamento
+        </Text>
+
+        <Text style={styles.headerTitle}>
+          Progresso
+        </Text>
       </View>
 
       {/* Ícone do canto direito */}
       <View style={styles.headerIcon}>
-        <Ionicons name="analytics-outline" size={22} color="#FFF" />
+        <Ionicons
+          name="analytics-outline"
+          size={22}
+          color={colors.textLight}
+        />
       </View>
     </Animated.View>
   );
@@ -61,11 +75,11 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -82,13 +96,13 @@ const styles = StyleSheet.create({
 
   headerSmall: {
     fontSize: 13,
-    color: '#555',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   headerTitle: {
     fontSize: 30,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 2,
     fontFamily: fonts.titleExtra,
   },
@@ -97,11 +111,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,

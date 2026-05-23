@@ -43,23 +43,31 @@ export default function CurrentStepCard({ activeStep }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   currentCard: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     borderRadius: 28,
     padding: 16,
     marginBottom: 20,
 
     flexDirection: 'row',
     alignItems: 'center',
+
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    elevation: 5,
   },
 
   currentIcon: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -71,13 +79,13 @@ const styles = StyleSheet.create({
 
   currentTitle: {
     fontSize: 13,
-    color: '#BDBDBD',
+    color: colors.textLightMuted,
     fontFamily: fonts.subtitle,
   },
 
   currentText: {
     fontSize: 15,
-    color: '#FFF',
+    color: colors.textLight,
     marginTop: 3,
     lineHeight: 20,
     fontFamily: fonts.titleMedium,

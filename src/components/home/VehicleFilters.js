@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 999,
     paddingVertical: 9,
     paddingHorizontal: 13,
     marginRight: 8,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -98,24 +98,24 @@ const styles = StyleSheet.create({
   },
 
   filterButtonActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
   },
 
   filterText: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   filterTextActive: {
-    color: '#FFF',
+    color: colors.textLight,
   },
 
   filterCount: {
     minWidth: 21,
     height: 21,
     borderRadius: 11,
-    backgroundColor: '#ECECEC',
+    backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 7,
@@ -128,11 +128,11 @@ const styles = StyleSheet.create({
 
   filterCountText: {
     fontSize: 10,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.button,
   },
 
   filterCountTextActive: {
-    color: '#FFF',
+    color: colors.black,
   },
 });

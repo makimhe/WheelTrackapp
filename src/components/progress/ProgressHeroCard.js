@@ -130,16 +130,15 @@ export default function ProgressHeroCard({
     </Animated.View>
   );
 }
-
 const styles = StyleSheet.create({
   heroCard: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 34,
     padding: 22,
     marginBottom: 16,
     overflow: 'hidden',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -164,7 +163,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -173,20 +172,20 @@ const styles = StyleSheet.create({
 
   heroBadgeText: {
     fontSize: 11,
-    color: colors.primary,
+    color: colors.primaryDark,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
 
   heroModel: {
     fontSize: 30,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.titleExtra,
   },
 
   heroPlate: {
     fontSize: 14,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },
@@ -195,20 +194,20 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   percentNumber: {
     fontSize: 19,
-    color: '#FFF',
+    color: colors.textLight,
     fontFamily: fonts.title,
   },
 
   percentLabel: {
     fontSize: 10,
-    color: '#CFCFCF',
+    color: colors.textLightMuted,
     marginTop: 1,
     fontFamily: fonts.subtitle,
   },
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
   },
 
   progressBox: {
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 24,
     padding: 16,
   },
@@ -234,13 +233,13 @@ const styles = StyleSheet.create({
 
   progressTitle: {
     fontSize: 14,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   progressPercent: {
     fontSize: 14,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
 
@@ -248,7 +247,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 9,
     borderRadius: 999,
-    backgroundColor: '#DDD',
+    backgroundColor: colors.surfaceMuted,
     overflow: 'hidden',
   },
 
@@ -267,14 +266,14 @@ const styles = StyleSheet.create({
   progressFooterText: {
     flex: 1,
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   progressFooterActive: {
     flex: 1,
     fontSize: 11,
-    color: colors.primary,
+    color: colors.primaryDark,
     textAlign: 'right',
     fontFamily: fonts.subtitle,
   },

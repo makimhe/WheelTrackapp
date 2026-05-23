@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { vehicles } from '../services/mockData';
 
 import fonts from '../styles/fonts';
-
+import colors from '../styles/colors';
 import ProgressHeader from '../components/progress/ProgressHeader';
 import ProgressHeroCard from '../components/progress/ProgressHeroCard';
 import ProgressStats from '../components/progress/ProgressStats';
@@ -238,11 +238,10 @@ export default function ProgressScreen({ route, navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: colors.background,
   },
 
   glowOne: {
@@ -250,7 +249,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(53,56,235,0.13)',
+    backgroundColor: colors.primarySoft,
     top: 90,
     right: -100,
   },
@@ -260,7 +259,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: 'rgba(255,255,255,0.55)',
+    backgroundColor: colors.whiteSoft,
     top: 360,
     left: -90,
   },
@@ -275,13 +274,13 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 22,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   sectionHint: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },

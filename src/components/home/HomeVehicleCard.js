@@ -144,10 +144,17 @@ export default function HomeVehicleCard({
           <View
             style={[
               styles.statusBadge,
-              vehicle.status === 'Concluído' && styles.statusBadgeDone,
+              vehicle.status === 'Concluído' &&
+                styles.statusBadgeDone,
             ]}
           >
-            <Text style={styles.statusText}>
+            <Text
+              style={[
+                styles.statusText,
+                vehicle.status === 'Concluído' &&
+                  styles.statusTextDone,
+              ]}
+            >
               {vehicle.status}
             </Text>
           </View>
@@ -244,7 +251,7 @@ export default function HomeVehicleCard({
             <Ionicons
               name="arrow-forward"
               size={14}
-              color="#FFF"
+              color={colors.textLight}
             />
           </View>
         </View>
@@ -255,13 +262,13 @@ export default function HomeVehicleCard({
 
 const styles = StyleSheet.create({
   vehicleCard: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 34,
     padding: 22,
     marginBottom: 28,
     overflow: 'hidden',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -280,7 +287,7 @@ const styles = StyleSheet.create({
   vehicleBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -289,13 +296,13 @@ const styles = StyleSheet.create({
 
   vehicleBadgeText: {
     fontSize: 11,
-    color: colors.primary,
+    color: colors.primaryDark,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
 
   statusBadge: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -306,9 +313,13 @@ const styles = StyleSheet.create({
   },
 
   statusText: {
-    color: '#FFF',
+    color: colors.textLight,
     fontSize: 11,
     fontFamily: fonts.subtitle,
+  },
+
+  statusTextDone: {
+    color: colors.black,
   },
 
   carImage: {
@@ -331,13 +342,13 @@ const styles = StyleSheet.create({
 
   vehicleName: {
     fontSize: 28,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   vehiclePlate: {
     fontSize: 14,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },
@@ -346,14 +357,14 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 27,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   percentCircleText: {
     fontSize: 14,
-    color: '#FFF',
+    color: colors.textLight,
     fontFamily: fonts.button,
   },
 
@@ -369,13 +380,13 @@ const styles = StyleSheet.create({
 
   progressLabel: {
     fontSize: 14,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   progressValue: {
     fontSize: 14,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
 
@@ -383,7 +394,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 9,
     borderRadius: 999,
-    backgroundColor: '#DDD',
+    backgroundColor: colors.surfaceMuted,
     overflow: 'hidden',
   },
 
@@ -408,13 +419,13 @@ const styles = StyleSheet.create({
 
   currentStepLabel: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   currentStepText: {
     fontSize: 15,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 2,
     fontFamily: fonts.subtitle,
   },
@@ -422,7 +433,7 @@ const styles = StyleSheet.create({
   openButton: {
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     paddingHorizontal: 15,
 
     flexDirection: 'row',
@@ -434,7 +445,7 @@ const styles = StyleSheet.create({
 
   openButtonText: {
     fontSize: 12,
-    color: '#FFF',
+    color: colors.textLight,
     marginRight: 6,
     fontFamily: fonts.button,
   },

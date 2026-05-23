@@ -9,6 +9,7 @@ import {
 
 import { Ionicons } from '@expo/vector-icons';
 
+import colors from '../../styles/colors';
 import fonts from '../../styles/fonts';
 
 export default function HomeHeader({
@@ -37,7 +38,7 @@ export default function HomeHeader({
         <Ionicons
           name="notifications-outline"
           size={22}
-          color="#FFF"
+          color={colors.textLight}
         />
 
         {unread > 0 && <View style={styles.dot} />}
@@ -56,14 +57,14 @@ const styles = StyleSheet.create({
 
   smallText: {
     fontSize: 13,
-    color: '#555',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
     marginBottom: 6,
   },
 
   title: {
     fontSize: 32,
-    color: '#111',
+    color: colors.textPrimary,
     lineHeight: 38,
     fontFamily: fonts.titleExtra,
   },
@@ -72,11 +73,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FF4D4D',
+    backgroundColor: colors.danger,
     position: 'absolute',
     top: 12,
     right: 12,

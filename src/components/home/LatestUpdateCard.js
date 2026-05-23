@@ -45,7 +45,7 @@ export default function LatestUpdateCard({ notification }) {
 
 const styles = StyleSheet.create({
   latestCard: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 28,
     padding: 16,
     marginBottom: 16,
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 6,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(53,56,235,0.10)',
+    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
 
   latestTitle: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   latestText: {
     fontSize: 14,
-    color: '#111',
+    color: colors.textPrimary,
     lineHeight: 19,
     marginTop: 2,
     fontFamily: fonts.bodySemiBold,

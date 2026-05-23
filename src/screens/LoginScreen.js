@@ -332,7 +332,7 @@ export default function LoginScreen({ navigation }) {
         >
           <View style={styles.logoGlow} />
 
-          <Text style={styles.logoText}>wheeltrack</Text>
+          <Text style={styles.logoText}>WheelTrack</Text>
 
           <Text style={styles.logoSubText}>
             Proteção inteligente para seu veículo
@@ -351,7 +351,7 @@ export default function LoginScreen({ navigation }) {
         >
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>Bem Vindo!</Text>
+              <Text style={styles.cardTitle}>Bem-vindo!</Text>
 
               <Text style={styles.cardSubtitle}>
                 Entre para acompanhar sua blindagem
@@ -375,14 +375,14 @@ export default function LoginScreen({ navigation }) {
               <Ionicons
                 name="mail-outline"
                 size={20}
-                color={colors.textMuted}
+                color={colors.textLightMuted}
                 style={styles.inputIcon}
               />
 
               <TextInput
                 style={styles.input}
                 placeholder="Inserir email"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={colors.textLightMuted}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -410,14 +410,14 @@ export default function LoginScreen({ navigation }) {
               <Ionicons
                 name="lock-closed-outline"
                 size={20}
-                color={colors.textMuted}
+                color={colors.textLightMuted}
                 style={styles.inputIcon}
               />
 
               <TextInput
                 style={styles.input}
                 placeholder="Inserir senha"
-                placeholderTextColor={colors.textMuted}
+                placeholderTextColor={colors.textLightMuted}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
@@ -442,7 +442,7 @@ export default function LoginScreen({ navigation }) {
                   <Ionicons
                     name={showPassword ? "eye-off-outline" : "eye-outline"}
                     size={20}
-                    color={colors.textMuted}
+                    color={colors.textLightMuted}
                   />
                 </Animated.View>
               </TouchableOpacity>
@@ -458,8 +458,8 @@ export default function LoginScreen({ navigation }) {
               onValueChange={setKeepConnected}
               disabled={isLoading}
               trackColor={{
-                false: colors.border,
-                true: colors.primary + "80",
+                false: colors.borderDark,
+                true: colors.primaryGlow,
               }}
               thumbColor={
                 keepConnected ? colors.primary : colors.textMuted
@@ -479,9 +479,7 @@ export default function LoginScreen({ navigation }) {
             <TouchableOpacity
               style={[
                 styles.loginButton,
-                isLoading && {
-                  opacity: 0.75,
-                },
+                isLoading && styles.loginButtonLoading,
               ]}
               onPress={handleLogin}
               onPressIn={handleButtonPressIn}
@@ -491,7 +489,7 @@ export default function LoginScreen({ navigation }) {
             >
               {isLoading ? (
                 <ActivityIndicator
-                  color={colors.background}
+                  color={colors.black}
                   size="small"
                 />
               ) : (
@@ -501,7 +499,7 @@ export default function LoginScreen({ navigation }) {
                   <Ionicons
                     name="arrow-forward"
                     size={18}
-                    color={colors.white}
+                    color={colors.black}
                   />
                 </View>
               )}
@@ -521,7 +519,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.backgroundDark,
     overflow: "hidden",
   },
 
@@ -532,71 +530,52 @@ const styles = StyleSheet.create({
 
   logoSection: {
     height: 240,
-
     justifyContent: "center",
     alignItems: "center",
   },
 
   logoGlow: {
     position: "absolute",
-
     width: 120,
     height: 120,
-
     borderRadius: 60,
-
-    backgroundColor: colors.primary + "18",
+    backgroundColor: colors.primarySoft,
   },
 
   logoText: {
     fontSize: 34,
-
-    color: colors.primary,
-
-    letterSpacing: 4,
-
+    color: colors.textLight,
+    letterSpacing: 3,
     fontFamily: fonts.titleExtra,
   },
 
   logoSubText: {
     marginTop: 8,
-
     fontSize: 12,
-
-    color: colors.textSecondary,
-
+    color: colors.textLightMuted,
     letterSpacing: 0.4,
-
     fontFamily: fonts.body,
   },
 
   card: {
     flex: 1,
-
     width: "100%",
     alignSelf: "stretch",
-
     marginTop: -20,
-
-    backgroundColor: colors.surface,
-
+    backgroundColor: colors.surfaceDark,
     borderTopLeftRadius: 42,
     borderTopRightRadius: 42,
-
     paddingHorizontal: 28,
     paddingTop: 36,
     paddingBottom: 20,
 
-    shadowColor: "#000",
-
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: -4,
     },
-
     shadowOpacity: 0.08,
     shadowRadius: 10,
-
     elevation: 10,
   },
 
@@ -604,27 +583,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-
     marginBottom: 34,
   },
 
   cardTitle: {
     fontSize: 28,
-
-    color: colors.white,
-
+    color: colors.textLight,
     letterSpacing: -1,
-
     fontFamily: fonts.title,
   },
 
   cardSubtitle: {
     marginTop: 5,
-
     fontSize: 13,
-
-    color: colors.textSecondary,
-
+    color: colors.textLightMuted,
     fontFamily: fonts.body,
   },
 
@@ -634,41 +606,29 @@ const styles = StyleSheet.create({
 
   inputLabel: {
     fontSize: 14,
-
-    color: colors.textSecondary,
-
+    color: colors.textLightMuted,
     marginBottom: 8,
-
     letterSpacing: 0.3,
-
     fontFamily: fonts.subtitle,
   },
 
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-
-    backgroundColor: colors.surface2,
-
+    backgroundColor: colors.surfaceDarkSoft,
     borderRadius: 18,
-
     paddingHorizontal: 16,
-
     height: 58,
-
     borderWidth: 0.4,
-    borderColor: "rgba(255,255,255,0.14)",
+    borderColor: colors.whiteSoft,
 
-    shadowColor: "#000",
-
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 6,
     },
-
     shadowOpacity: 0.18,
     shadowRadius: 12,
-
     elevation: 5,
   },
 
@@ -678,11 +638,8 @@ const styles = StyleSheet.create({
 
   input: {
     flex: 1,
-
     fontSize: 16,
-
-    color: colors.textPrimary,
-
+    color: colors.textLight,
     fontFamily: fonts.body,
   },
 
@@ -694,71 +651,57 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
     marginTop: 6,
     marginBottom: 34,
   },
 
   keepText: {
     fontSize: 15,
-
-    color: colors.textSecondary,
-
+    color: colors.textLightMuted,
     fontFamily: fonts.body,
   },
 
   loginButton: {
     backgroundColor: colors.primary,
-
     height: 58,
-
     borderRadius: 24,
-
     alignItems: "center",
     justifyContent: "center",
-
     marginTop: 8,
 
     shadowColor: colors.primary,
-
     shadowOffset: {
       width: 0,
       height: 8,
     },
-
     shadowOpacity: 0.35,
     shadowRadius: 16,
-
     elevation: 8,
+  },
+
+  loginButtonLoading: {
+    opacity: 0.75,
   },
 
   loginButtonContent: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-
-    gap: 8,
   },
 
   loginButtonText: {
-    color: colors.white,
-
+    color: colors.black,
     fontSize: 18,
-
     letterSpacing: 0.5,
-
+    marginRight: 8,
     fontFamily: fonts.button,
   },
 
   footer: {
     marginTop: "auto",
-
     textAlign: "center",
-
     fontSize: 13,
-
-    color: colors.textMuted,
-
+    color: colors.textLightMuted,
     fontFamily: fonts.body,
   },
 });

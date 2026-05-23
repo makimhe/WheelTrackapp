@@ -142,7 +142,7 @@ export default function HomeScreen({ navigation }) {
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar por modelo ou placa"
-            placeholderTextColor="#888"
+            placeholderTextColor={colors.textMuted}
             value={search}
             onChangeText={setSearch}
             autoCapitalize="none"
@@ -201,11 +201,10 @@ export default function HomeScreen({ navigation }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: colors.background,
     paddingHorizontal: 20,
   },
 
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(53,56,235,0.13)',
+    backgroundColor: colors.primarySoft,
     top: 90,
     right: -100,
   },
@@ -224,14 +223,14 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: 'rgba(255,255,255,0.55)',
+    backgroundColor: colors.whiteSoft,
     top: 360,
     left: -90,
   },
 
   searchBox: {
     height: 54,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     borderRadius: 27,
 
     flexDirection: 'row',
@@ -240,7 +239,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     marginBottom: 14,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -252,7 +251,7 @@ const styles = StyleSheet.create({
 
   searchInput: {
     flex: 1,
-    color: '#FFF',
+    color: colors.textLight,
     fontSize: 14,
     marginLeft: 10,
     marginRight: 8,
@@ -265,13 +264,13 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 20,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   sectionHint: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },

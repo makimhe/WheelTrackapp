@@ -118,7 +118,7 @@ function AnimatedNotificationCard({
                   : 'checkmark'
             }
             size={18}
-            color={isUnread ? '#FFF' : '#111'}
+            color={isUnread ? colors.black : colors.textPrimary}
           />
         </View>
 
@@ -172,7 +172,7 @@ function AnimatedNotificationCard({
                     : 'checkmark-circle-outline'
                 }
                 size={13}
-                color={isUnread ? colors.primary : '#777'}
+                color={isUnread ? colors.primaryDark : colors.textSecondary}
               />
 
               <Text
@@ -316,7 +316,7 @@ export default function NotificationsScreen({ navigation }) {
                 <Ionicons
                   name="chevron-back"
                   size={22}
-                  color="#111"
+                  color={colors.textPrimary}
                 />
               </TouchableOpacity>
 
@@ -334,7 +334,7 @@ export default function NotificationsScreen({ navigation }) {
                 <Ionicons
                   name="notifications-outline"
                   size={22}
-                  color="#FFF"
+                  color={colors.textLight}
                 />
 
                 {unreadCount > 0 && (
@@ -371,7 +371,7 @@ export default function NotificationsScreen({ navigation }) {
                 <Ionicons
                   name="checkmark-done-outline"
                   size={17}
-                  color={unreadCount === 0 ? '#999' : '#FFF'}
+                  color={unreadCount === 0 ? colors.textMuted : colors.textLight}
                 />
 
                 <Text
@@ -392,7 +392,7 @@ export default function NotificationsScreen({ navigation }) {
                   <Ionicons
                     name="notifications"
                     size={18}
-                    color="#FFF"
+                    color={colors.textLight}
                   />
                 </View>
 
@@ -406,7 +406,7 @@ export default function NotificationsScreen({ navigation }) {
                   <Ionicons
                     name="flash-outline"
                     size={18}
-                    color={colors.primary}
+                    color={colors.primaryDark}
                   />
                 </View>
 
@@ -415,12 +415,12 @@ export default function NotificationsScreen({ navigation }) {
                 <Text style={styles.statLabel}>Novas</Text>
               </View>
 
-              <View style={styles.statCard}>
+              <View style={styles.statCardLast}>
                 <View style={styles.statIconLight}>
                   <Ionicons
                     name="checkmark-done"
                     size={18}
-                    color="#111"
+                    color={colors.textPrimary}
                   />
                 </View>
 
@@ -530,7 +530,7 @@ export default function NotificationsScreen({ navigation }) {
             <Ionicons
               name="notifications-off-outline"
               size={38}
-              color="#999"
+              color={colors.textMuted}
             />
 
             <Text style={styles.emptyTitle}>
@@ -550,7 +550,7 @@ export default function NotificationsScreen({ navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: colors.background,
   },
 
   glowOne: {
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: 'rgba(53,56,235,0.13)',
+    backgroundColor: colors.primarySoft,
     top: 90,
     right: -100,
   },
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
     width: 180,
     height: 180,
     borderRadius: 90,
-    backgroundColor: 'rgba(255,255,255,0.55)',
+    backgroundColor: colors.whiteSoft,
     top: 360,
     left: -90,
   },
@@ -587,11 +587,11 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -608,13 +608,13 @@ const styles = StyleSheet.create({
 
   headerSmall: {
     fontSize: 13,
-    color: '#555',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   headerTitle: {
     fontSize: 30,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 2,
     fontFamily: fonts.titleExtra,
   },
@@ -623,11 +623,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -641,14 +641,14 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FF4D4D',
+    backgroundColor: colors.danger,
     position: 'absolute',
     top: 12,
     right: 12,
   },
 
   summaryCard: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 34,
     padding: 22,
     marginBottom: 16,
@@ -657,7 +657,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -674,13 +674,13 @@ const styles = StyleSheet.create({
 
   summaryTitle: {
     fontSize: 22,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   summaryText: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 5,
     lineHeight: 18,
     fontFamily: fonts.body,
@@ -689,7 +689,7 @@ const styles = StyleSheet.create({
   markButton: {
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     paddingHorizontal: 13,
 
     flexDirection: 'row',
@@ -698,18 +698,18 @@ const styles = StyleSheet.create({
   },
 
   markButtonDisabled: {
-    backgroundColor: '#EFEFEF',
+    backgroundColor: colors.surfaceMuted,
   },
 
   markButtonText: {
     fontSize: 12,
-    color: '#FFF',
+    color: colors.textLight,
     marginLeft: 6,
     fontFamily: fonts.button,
   },
 
   markButtonTextDisabled: {
-    color: '#999',
+    color: colors.textMuted,
   },
 
   statsRow: {
@@ -719,13 +719,30 @@ const styles = StyleSheet.create({
 
   statCard: {
     flex: 1,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 24,
     paddingVertical: 16,
     alignItems: 'center',
     marginRight: 10,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+
+  statCardLast: {
+    flex: 1,
+    backgroundColor: colors.surfaceSoft,
+    borderRadius: 24,
+    paddingVertical: 16,
+    alignItems: 'center',
+
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 5,
@@ -739,7 +756,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -748,7 +765,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(53,56,235,0.10)',
+    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -757,27 +774,27 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   statValue: {
     fontSize: 22,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 8,
     fontFamily: fonts.title,
   },
 
   statLabel: {
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },
 
   highlightCard: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     borderRadius: 28,
     padding: 16,
     marginBottom: 20,
@@ -790,7 +807,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -802,13 +819,13 @@ const styles = StyleSheet.create({
 
   highlightTitle: {
     fontSize: 13,
-    color: '#BDBDBD',
+    color: colors.textLightMuted,
     fontFamily: fonts.subtitle,
   },
 
   highlightText: {
     fontSize: 15,
-    color: '#FFF',
+    color: colors.textLight,
     marginTop: 3,
     lineHeight: 20,
     fontFamily: fonts.titleMedium,
@@ -822,13 +839,13 @@ const styles = StyleSheet.create({
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 999,
     paddingVertical: 9,
     paddingHorizontal: 14,
     marginRight: 10,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -839,24 +856,24 @@ const styles = StyleSheet.create({
   },
 
   filterButtonActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
   },
 
   filterText: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   filterTextActive: {
-    color: '#FFF',
+    color: colors.textLight,
   },
 
   filterCount: {
     minWidth: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: '#ECECEC',
+    backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
@@ -869,12 +886,12 @@ const styles = StyleSheet.create({
 
   filterCountText: {
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.button,
   },
 
   filterCountTextActive: {
-    color: '#FFF',
+    color: colors.black,
   },
 
   sectionHeader: {
@@ -883,26 +900,26 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 20,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   sectionHint: {
     fontSize: 12,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },
 
   notificationCard: {
     flexDirection: 'row',
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 28,
     padding: 16,
     marginBottom: 14,
     overflow: 'hidden',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -914,19 +931,19 @@ const styles = StyleSheet.create({
 
   notificationCardUnread: {
     borderWidth: 1,
-    borderColor: 'rgba(53,56,235,0.20)',
-    backgroundColor: 'rgba(248,248,248,0.96)',
+    borderColor: colors.primaryBorder,
+    backgroundColor: colors.surface,
   },
 
   notificationIcon: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E3E3E3',
+    borderColor: colors.border,
     marginRight: 12,
   },
 
@@ -953,13 +970,13 @@ const styles = StyleSheet.create({
 
   vehicleName: {
     fontSize: 15,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
 
   notificationTime: {
     fontSize: 11,
-    color: '#999',
+    color: colors.textMuted,
     marginTop: 2,
     fontFamily: fonts.body,
   },
@@ -973,12 +990,12 @@ const styles = StyleSheet.create({
 
   newBadgeText: {
     fontSize: 11,
-    color: '#FFF',
+    color: colors.black,
     fontFamily: fonts.button,
   },
 
   readBadge: {
-    backgroundColor: '#EFEFEF',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -986,13 +1003,13 @@ const styles = StyleSheet.create({
 
   readBadgeText: {
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   notificationStep: {
     fontSize: 14,
-    color: '#555',
+    color: colors.textSecondary,
     lineHeight: 19,
     marginBottom: 12,
     fontFamily: fonts.body,
@@ -1008,7 +1025,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -1016,25 +1033,25 @@ const styles = StyleSheet.create({
   },
 
   labelPillUnread: {
-    backgroundColor: 'rgba(53,56,235,0.10)',
+    backgroundColor: colors.primarySoft,
   },
 
   labelText: {
     flex: 1,
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
 
   labelTextUnread: {
-    color: colors.primary,
+    color: colors.primaryDark,
   },
 
   progressButton: {
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     paddingHorizontal: 11,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1042,18 +1059,18 @@ const styles = StyleSheet.create({
 
   progressButtonText: {
     fontSize: 11,
-    color: '#FFF',
+    color: colors.textLight,
     fontFamily: fonts.button,
   },
 
   emptyBox: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 28,
     padding: 30,
     alignItems: 'center',
     marginTop: 18,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -1065,14 +1082,14 @@ const styles = StyleSheet.create({
 
   emptyTitle: {
     fontSize: 18,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 12,
     fontFamily: fonts.title,
   },
 
   emptyText: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 5,
     lineHeight: 18,

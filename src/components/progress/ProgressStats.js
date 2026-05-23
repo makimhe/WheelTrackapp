@@ -64,7 +64,6 @@ export default function ProgressStats({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
@@ -73,13 +72,13 @@ const styles = StyleSheet.create({
 
   statCard: {
     flex: 1,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 24,
     paddingVertical: 16,
     alignItems: 'center',
     marginRight: 10,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 5,
@@ -91,12 +90,12 @@ const styles = StyleSheet.create({
 
   statCardLast: {
     flex: 1,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 24,
     paddingVertical: 16,
     alignItems: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 5,
@@ -119,7 +118,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: 'rgba(53,56,235,0.10)',
+    backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -128,21 +127,21 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   statValue: {
     fontSize: 22,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 8,
     fontFamily: fonts.title,
   },
 
   statLabel: {
     fontSize: 10,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 2,
     textAlign: 'center',
     fontFamily: fonts.body,
