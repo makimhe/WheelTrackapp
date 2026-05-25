@@ -1,62 +1,63 @@
 // Paleta central do app
-// Todas as cores do projeto devem vir daqui
+// Cinza premium + cards em destaque
 
 const colors = {
-  // Fundo geral das telas
-  background: '#F3F1FA',
-
-  // Fundo escuro usado em cards premium e botões principais
-  backgroundDark: '#171827',
+  // Fundo geral
+  background: '#D8D8D6',
+  backgroundDark: '#111111',
 
   // Cards e superfícies claras
   surface: '#FFFFFF',
-  surfaceSoft: '#F8F7FC',
-  surfaceMuted: '#E9E6F3',
+  surfaceSoft: '#F4F4F2',
+  surfaceMuted: '#E5E5E2',
 
-  // Cards e superfícies escuras
-  surfaceDark: '#202233',
-  surfaceDarkSoft: '#26283B',
+  // Cards escuros
+  surfaceDark: '#111111',
+  surfaceDarkSoft: '#2A2A2A',
 
-  // Cor principal do app
-  primary: '#A7F04A',
-  primaryDark: '#7CCB2F',
-  primarySoft: 'rgba(167, 240, 74, 0.14)',
-  primaryGlow: 'rgba(167, 240, 74, 0.22)',
+  // Cor principal
+  primary: '#111111',
+  primaryDark: '#111111',
+  primarySoft: 'rgba(17,17,17,0.08)',
+  primaryGlow: 'rgba(17,17,17,0.14)',
+  primaryBorder: 'rgba(17,17,17,0.14)',
 
-  // Cor secundária escura
-  secondary: '#24243D',
-  secondarySoft: '#353552',
+  // Secundária
+  secondary: '#5F5F5C',
+  secondarySoft: '#7A7A77',
 
-  // Cor de destaque/alerta visual
-  accent: '#F25F5C',
-  accentDark: '#D94D4A',
-  accentSoft: 'rgba(242, 95, 92, 0.12)',
+  // Destaques
+  accent: '#9A9A95',
+  accentDark: '#747470',
+  accentSoft: 'rgba(154,154,149,0.14)',
 
-  // Textos em fundo claro
-  textPrimary: '#1E1E32',
-  textSecondary: '#6D6A86',
-  textMuted: '#A7A2BC',
+  // Textos claros
+  textPrimary: '#111111',
+  textSecondary: '#666663',
+  textMuted: '#9A9A96',
 
-  // Textos em fundo escuro
+  // Textos escuros
   textLight: '#FFFFFF',
-  textLightMuted: '#C9C4DC',
+  textLightMuted: '#D7D7D4',
 
   // Bordas
-  border: '#DFDCEB',
-  borderDark: '#303145',
+  border: '#E8E8E5',
+  borderDark: '#303030',
 
   // Estados
-  success: '#98c994',
-  warning: '#F5B84B',
-  danger: '#F25F5C',
+  success: '#111111',
+  warning: '#8C8C88',
+  danger: '#111111',
 
-  // Cores base
+  // Base
   white: '#FFFFFF',
-  black: '#171827',
+  black: '#111111',
 
-  // Transparências úteis
-  whiteSoft: 'rgba(255, 255, 255, 0.14)',
-  blackSoft: 'rgba(23, 24, 39, 0.08)',
+  // Transparências
+  whiteSoft: 'rgba(255,255,255,0.35)',
+  blackSoft: 'rgba(17,17,17,0.08)',
+
+  // Sombras
   shadow: '#000000',
 };
 

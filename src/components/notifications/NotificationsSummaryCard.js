@@ -59,10 +59,9 @@ export default function NotificationsSummaryCard({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   summaryCard: {
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 34,
     padding: 22,
     marginBottom: 16,
@@ -71,7 +70,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -88,13 +87,13 @@ const styles = StyleSheet.create({
 
   summaryTitle: {
     fontSize: 22,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 
   summaryText: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     marginTop: 5,
     lineHeight: 18,
     fontFamily: fonts.body,
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
   markButton: {
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     paddingHorizontal: 13,
 
     flexDirection: 'row',
@@ -112,17 +111,17 @@ const styles = StyleSheet.create({
   },
 
   markButtonDisabled: {
-    backgroundColor: '#EFEFEF',
+    backgroundColor: colors.surfaceMuted,
   },
 
   markButtonText: {
     fontSize: 12,
-    color: '#FFF',
+    color: colors.textLight,
     marginLeft: 6,
     fontFamily: fonts.button,
   },
 
   markButtonTextDisabled: {
-    color: '#999',
+    color: colors.textMuted,
   },
 });

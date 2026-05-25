@@ -21,8 +21,8 @@ export default function LatestUpdateCard({ notification }) {
       <View style={styles.latestIcon}>
         <Ionicons
           name="sparkles-outline"
-          size={20}
-          color={colors.primary}
+          size={24}
+          color={colors.white}
         />
       </View>
 
@@ -45,7 +45,7 @@ export default function LatestUpdateCard({ notification }) {
 
 const styles = StyleSheet.create({
   latestCard: {
-    backgroundColor: colors.surfaceSoft,
+    backgroundColor: colors.black,
     borderRadius: 28,
     padding: 16,
     marginBottom: 16,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
 
   latestContent: {
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
 
   latestTitle: {
     fontSize: 13,
-    color: colors.textSecondary,
+    color: colors.textLight,
     fontFamily: fonts.subtitle,
   },
 
   latestText: {
     fontSize: 14,
-    color: colors.textPrimary,
+    color: colors.textLight,
     lineHeight: 19,
     marginTop: 2,
     fontFamily: fonts.bodySemiBold,

@@ -56,7 +56,6 @@ export default function NotificationsHeader({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
@@ -68,11 +67,11 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -89,13 +88,13 @@ const styles = StyleSheet.create({
 
   headerSmall: {
     fontSize: 13,
-    color: '#555',
+    color: colors.textSecondary,
     fontFamily: fonts.body,
   },
 
   headerTitle: {
     fontSize: 30,
-    color: '#111',
+    color: colors.textPrimary,
     marginTop: 2,
     fontFamily: fonts.titleExtra,
   },
@@ -104,11 +103,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -122,7 +121,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FF4D4D',
+    backgroundColor: colors.danger,
     position: 'absolute',
     top: 12,
     right: 12,

@@ -196,11 +196,7 @@ export default function HomeVehicleCard({
             </Text>
           </View>
 
-          <View style={styles.percentCircle}>
-            <Text style={styles.percentCircleText}>
-              {animatedProgress}%
-            </Text>
-          </View>
+          
         </View>
 
         {/* Barra de progresso */}
@@ -262,21 +258,21 @@ export default function HomeVehicleCard({
 
 const styles = StyleSheet.create({
   vehicleCard: {
-    backgroundColor: colors.surfaceSoft,
-    borderRadius: 34,
-    padding: 22,
-    marginBottom: 28,
-    overflow: 'hidden',
+  backgroundColor: colors.surface,
+  borderRadius: 20,
+  padding: 16,
+  marginBottom: 26,
+  overflow: 'visible',
 
-    shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    elevation: 5,
+  shadowColor: colors.shadow,
+  shadowOffset: {
+    width: 0,
+    height: 0,
   },
+  shadowOpacity: 0.13,
+  shadowRadius: 16,
+  elevation: 7,
+},
 
   vehicleTop: {
     flexDirection: 'row',
@@ -296,7 +292,7 @@ const styles = StyleSheet.create({
 
   vehicleBadgeText: {
     fontSize: 11,
-    color: colors.primaryDark,
+    color: colors.white,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },

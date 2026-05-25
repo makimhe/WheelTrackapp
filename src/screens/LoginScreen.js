@@ -73,7 +73,7 @@ export default function LoginScreen({ navigation }) {
       Animated.parallel([
         Animated.timing(logoOpacity, {
           toValue: 1,
-          duration: 500,
+          duration: 200,
           useNativeDriver: true,
         }),
 
@@ -88,7 +88,7 @@ export default function LoginScreen({ navigation }) {
       Animated.parallel([
         Animated.timing(cardOpacity, {
           toValue: 1,
-          duration: 500,
+          duration: 200,
           useNativeDriver: true,
         }),
 
@@ -104,7 +104,7 @@ export default function LoginScreen({ navigation }) {
         Animated.parallel([
           Animated.timing(emailOpacity, {
             toValue: 1,
-            duration: 360,
+            duration: 160,
             useNativeDriver: true,
           }),
 
@@ -140,13 +140,13 @@ export default function LoginScreen({ navigation }) {
       Animated.sequence([
         Animated.timing(buttonPulse, {
           toValue: 1.025,
-          duration: 900,
+          duration: 2000,
           useNativeDriver: true,
         }),
 
         Animated.timing(buttonPulse, {
           toValue: 1,
-          duration: 900,
+          duration: 700,
           useNativeDriver: true,
         }),
       ])
@@ -270,7 +270,7 @@ export default function LoginScreen({ navigation }) {
       toValue: 0.96,
       useNativeDriver: true,
       friction: 5,
-      tension: 120,
+      tension: 100,
     }).start();
   };
 
@@ -291,14 +291,14 @@ export default function LoginScreen({ navigation }) {
         toValue: 0.78,
         useNativeDriver: true,
         friction: 5,
-        tension: 150,
+        tension: 100,
       }),
 
       Animated.spring(eyeScale, {
         toValue: 1,
         useNativeDriver: true,
         friction: 5,
-        tension: 150,
+        tension: 100,
       }),
     ]).start();
 
@@ -489,7 +489,7 @@ export default function LoginScreen({ navigation }) {
             >
               {isLoading ? (
                 <ActivityIndicator
-                  color={colors.black}
+                  color={colors.white}
                   size="small"
                 />
               ) : (
@@ -499,7 +499,7 @@ export default function LoginScreen({ navigation }) {
                   <Ionicons
                     name="arrow-forward"
                     size={18}
-                    color={colors.black}
+                    color={colors.white}
                   />
                 </View>
               )}
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
 
   inputLabel: {
     fontSize: 14,
-    color: colors.textLightMuted,
+    color: colors.textLight,
     marginBottom: 8,
     letterSpacing: 0.3,
     fontFamily: fonts.subtitle,
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
   },
 
   loginButtonText: {
-    color: colors.black,
+    color: colors.white,
     fontSize: 18,
     letterSpacing: 0.5,
     marginRight: 8,

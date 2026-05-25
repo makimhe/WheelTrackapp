@@ -60,7 +60,6 @@ export default function NotificationFilters({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   filters: {
     flexDirection: 'row',
@@ -70,13 +69,13 @@ const styles = StyleSheet.create({
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 999,
     paddingVertical: 9,
     paddingHorizontal: 14,
     marginRight: 10,
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -87,24 +86,24 @@ const styles = StyleSheet.create({
   },
 
   filterButtonActive: {
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
   },
 
   filterText: {
     fontSize: 13,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   filterTextActive: {
-    color: '#FFF',
+    color: colors.textLight,
   },
 
   filterCount: {
     minWidth: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: '#ECECEC',
+    backgroundColor: colors.surfaceMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
@@ -117,11 +116,11 @@ const styles = StyleSheet.create({
 
   filterCountText: {
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.button,
   },
 
   filterCountTextActive: {
-    color: '#FFF',
+    color: colors.black,
   },
 });

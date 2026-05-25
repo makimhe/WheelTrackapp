@@ -41,7 +41,7 @@ export default function HomeStats({
           <Ionicons
             name="time-outline"
             size={18}
-            color={colors.primary}
+            color={colors.white}
           />
         </View>
 
@@ -59,7 +59,7 @@ export default function HomeStats({
           <Ionicons
             name="checkmark-done"
             size={18}
-            color={colors.textPrimary}
+            color={colors.white}
           />
         </View>
 
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },

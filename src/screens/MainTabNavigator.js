@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from "react";
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Animated,
 } from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -56,14 +59,7 @@ function TabIcon({ routeName, focused }) {
           styles.iconBox,
           focused && styles.activeIcon,
           {
-            transform: [
-              {
-                scale,
-              },
-              {
-                translateY,
-              },
-            ],
+            transform: [{ scale }, { translateY }],
           },
         ]}
       >
@@ -79,11 +75,7 @@ function TabIcon({ routeName, focused }) {
           styles.activeDot,
           {
             opacity: scaleAnim,
-            transform: [
-              {
-                scale: scaleAnim,
-              },
-            ],
+            transform: [{ scale: scaleAnim }],
           },
         ]}
       />
@@ -104,6 +96,8 @@ function CustomTabBar({ state, navigation }) {
         },
       ]}
     >
+      <View style={styles.tabGlow} />
+
       <View style={styles.tabBar}>
         {state.routes.map((route, index) => {
           const focused = state.index === index;
@@ -158,42 +152,48 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-
     alignItems: "center",
   },
 
+  tabGlow: {
+    position: "absolute",
+    width: 306,
+    height: 61,
+    bottom: -3,
+    borderRadius: 60,
+    backgroundColor: colors.blackSoft,
+    opacity: 0.45,
+  },
+
   tabBar: {
-    width: 280,
-    height: 58,
-
-    borderRadius: 70,
-
+    width: 300,
+    height: 56,
+    borderRadius: 999,
     backgroundColor: colors.surface,
 
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
 
-    paddingHorizontal: 4,
+    paddingHorizontal: 6,
 
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
+    borderWidth: 1.2,
+    borderColor: colors.border,
 
-    shadowColor: "#000",
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
-      height: 10,
+      height: 15,
     },
-    shadowOpacity: 0.18,
-    shadowRadius: 20,
+    shadowOpacity: 0.16,
+    shadowRadius: 28,
 
-    elevation: 12,
+    elevation: 10,
   },
 
   tabItem: {
-    width: 50,
-    height: 54,
-
+    width: 52,
+    height: 58,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -206,9 +206,7 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 42,
     height: 42,
-
     borderRadius: 21,
-
     alignItems: "center",
     justifyContent: "center",
   },
@@ -219,22 +217,19 @@ const styles = StyleSheet.create({
     shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
-      height: 5,
+      height: 6,
     },
-    shadowOpacity: 0.32,
-    shadowRadius: 10,
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
 
-    elevation: 8,
+    elevation: 10,
   },
 
   activeDot: {
     width: 4,
     height: 4,
-
     borderRadius: 2,
-
     backgroundColor: colors.primary,
-
     marginTop: 3,
   },
 });

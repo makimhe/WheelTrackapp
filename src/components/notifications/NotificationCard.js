@@ -196,17 +196,16 @@ export default function NotificationCard({
     </Animated.View>
   );
 }
-
 const styles = StyleSheet.create({
   notificationCard: {
     flexDirection: 'row',
-    backgroundColor: '#F8F8F8',
+    backgroundColor: colors.surfaceSoft,
     borderRadius: 28,
     padding: 16,
     marginBottom: 14,
     overflow: 'hidden',
 
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 8,
@@ -218,19 +217,19 @@ const styles = StyleSheet.create({
 
   notificationCardUnread: {
     borderWidth: 1,
-    borderColor: 'rgba(53,56,235,0.20)',
-    backgroundColor: 'rgba(248,248,248,0.96)',
+    borderColor: colors.primaryBorder,
+    backgroundColor: colors.surface,
   },
 
   notificationIcon: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E3E3E3',
+    borderColor: colors.border,
     marginRight: 12,
   },
 
@@ -257,13 +256,13 @@ const styles = StyleSheet.create({
 
   vehicleName: {
     fontSize: 15,
-    color: '#111',
+    color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
 
   notificationTime: {
     fontSize: 11,
-    color: '#999',
+    color: colors.textMuted,
     marginTop: 2,
     fontFamily: fonts.body,
   },
@@ -277,12 +276,12 @@ const styles = StyleSheet.create({
 
   newBadgeText: {
     fontSize: 11,
-    color: '#FFF',
+    color: colors.textLight,
     fontFamily: fonts.button,
   },
 
   readBadge: {
-    backgroundColor: '#EFEFEF',
+    backgroundColor: colors.surfaceMuted,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -290,13 +289,13 @@ const styles = StyleSheet.create({
 
   readBadgeText: {
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
 
   notificationStep: {
     fontSize: 14,
-    color: '#555',
+    color: colors.textSecondary,
     lineHeight: 19,
     marginBottom: 12,
     fontFamily: fonts.body,
@@ -312,7 +311,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
+    backgroundColor: colors.surface,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -320,25 +319,25 @@ const styles = StyleSheet.create({
   },
 
   labelPillUnread: {
-    backgroundColor: 'rgba(53,56,235,0.10)',
+    backgroundColor: colors.primarySoft,
   },
 
   labelText: {
     flex: 1,
     fontSize: 11,
-    color: '#777',
+    color: colors.textSecondary,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
 
   labelTextUnread: {
-    color: colors.primary,
+    color: colors.primaryDark,
   },
 
   progressButton: {
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#111',
+    backgroundColor: colors.black,
     paddingHorizontal: 11,
     alignItems: 'center',
     justifyContent: 'center',
@@ -346,7 +345,7 @@ const styles = StyleSheet.create({
 
   progressButtonText: {
     fontSize: 11,
-    color: '#FFF',
+    color: colors.textLight,
     fontFamily: fonts.button,
   },
 });

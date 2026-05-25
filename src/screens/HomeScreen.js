@@ -27,13 +27,8 @@ import EmptyVehicleState from '../components/home/EmptyVehicleState';
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
-  // Pega o primeiro nome do usuário
   const firstName = user.name.split(' ')[0];
 
-  // Conta notificações não lidas
-  const unread = notifications.filter((item) => !item.read).length;
-
-  // Conta os veículos por status
   const totalVehicles = vehicles.length;
 
   const inProgressVehicles = vehicles.filter(
@@ -44,16 +39,13 @@ export default function HomeScreen({ navigation }) {
     (vehicle) => vehicle.status?.toLowerCase().trim() === 'concluído'
   ).length;
 
-  // Pega a última notificação não lida ou a primeira da lista
   const latestNotification =
     notifications.find((notification) => !notification.read) ||
     notifications[0];
 
-  // Estados da busca e dos filtros
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
 
-  // Lista de filtros da tela
   const filters = [
     {
       key: 'all',
@@ -72,7 +64,6 @@ export default function HomeScreen({ navigation }) {
     },
   ];
 
-  // Filtra os veículos por texto e status
   const filteredVehicles = vehicles.filter((vehicle) => {
     const searchText = search.toLowerCase().trim();
 
@@ -94,7 +85,6 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.wrapper}>
-      {/* Luzes decorativas do fundo */}
       <View style={styles.glowOne} />
       <View style={styles.glowTwo} />
 
@@ -107,31 +97,24 @@ export default function HomeScreen({ navigation }) {
           paddingBottom: 130,
         }}
       >
-        {/* Cabeçalho da Home */}
         <HomeHeader
-          firstName={firstName}
-          unread={unread}
-          onPressNotifications={() => navigation.navigate('Notificações')}
-        />
+  firstName={firstName}
+  userName={user.name}
+  userEmail={user.email}
+  onContact={() => console.log('Fale conosco')}
+  onLogout={() => navigation.replace('Login')}
+/>
 
-        {/* Card principal de resumo */}
-        <HomeSummaryCard
-          inProgressVehicles={inProgressVehicles}
-        />
+        <HomeSummaryCard inProgressVehicles={inProgressVehicles} />
 
-        {/* Cards pequenos de estatísticas */}
         <HomeStats
           totalVehicles={totalVehicles}
           inProgressVehicles={inProgressVehicles}
           completedVehicles={completedVehicles}
         />
 
-        {/* Última atualização */}
-        <LatestUpdateCard
-          notification={latestNotification}
-        />
+        
 
-        {/* Campo de busca */}
         <View style={styles.searchBox}>
           <Ionicons
             name="search-outline"
@@ -162,14 +145,12 @@ export default function HomeScreen({ navigation }) {
           )}
         </View>
 
-        {/* Filtros da lista de veículos */}
         <VehicleFilters
           filters={filters}
           activeFilter={filter}
           onChangeFilter={setFilter}
         />
 
-        {/* Título da lista */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
             {filter === 'all'
@@ -184,7 +165,6 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </View>
 
-        {/* Lista de veículos */}
         {filteredVehicles.length === 0 ? (
           <EmptyVehicleState />
         ) : (
@@ -201,6 +181,7 @@ export default function HomeScreen({ navigation }) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,

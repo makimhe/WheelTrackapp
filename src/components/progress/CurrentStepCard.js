@@ -46,7 +46,7 @@ export default function CurrentStepCard({ activeStep }) {
 const styles = StyleSheet.create({
   currentCard: {
     backgroundColor: colors.black,
-    borderRadius: 28,
+    borderRadius: 20,
     padding: 16,
     marginBottom: 20,
 

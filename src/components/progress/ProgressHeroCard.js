@@ -63,16 +63,6 @@ export default function ProgressHeroCard({
           </Text>
         </View>
 
-        {/* Círculo com porcentagem */}
-        <View style={styles.percentCircle}>
-          <Text style={styles.percentNumber}>
-            {animatedPct}%
-          </Text>
-
-          <Text style={styles.percentLabel}>
-            pronto
-          </Text>
-        </View>
       </View>
 
       {/* Imagem do veículo */}
@@ -133,7 +123,7 @@ export default function ProgressHeroCard({
 const styles = StyleSheet.create({
   heroCard: {
     backgroundColor: colors.surfaceSoft,
-    borderRadius: 34,
+    borderRadius: 25,
     padding: 22,
     marginBottom: 16,
     overflow: 'hidden',
@@ -217,11 +207,12 @@ const styles = StyleSheet.create({
     height: 190,
     marginTop: 14,
     marginBottom: 16,
+    borderRadius: 12,
   },
 
   progressBox: {
     backgroundColor: colors.surface,
-    borderRadius: 24,
+    borderRadius: 16,
     padding: 16,
   },
 

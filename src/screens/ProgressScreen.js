@@ -107,27 +107,27 @@ export default function ProgressScreen({ route, navigation }) {
       Animated.parallel([
         Animated.timing(heroFade, {
           toValue: 1,
-          duration: 430,
+          duration: 200,
           useNativeDriver: true,
         }),
 
         Animated.spring(heroSlide, {
           toValue: 0,
           friction: 8,
-          tension: 70,
+          tension: 50,
           useNativeDriver: true,
         }),
 
         Animated.timing(imageFade, {
           toValue: 1,
-          duration: 480,
+          duration: 220,
           useNativeDriver: true,
         }),
 
         Animated.spring(imageSlide, {
           toValue: 0,
           friction: 8,
-          tension: 70,
+          tension: 60,
           useNativeDriver: true,
         }),
 
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 22,
-    color: colors.textPrimary,
+    color: colors.white,
     fontFamily: fonts.title,
   },
 
