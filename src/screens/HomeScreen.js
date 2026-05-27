@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   searchBox: {
     height: 54,
     backgroundColor: colors.black,
-    borderRadius: 27,
+    borderRadius: 21,
 
     flexDirection: 'row',
     alignItems: 'center',

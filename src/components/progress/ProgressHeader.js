@@ -51,15 +51,6 @@ export default function ProgressHeader({
           Progresso
         </Text>
       </View>
-
-      {/* Ícone do canto direito */}
-      <View style={styles.headerIcon}>
-        <Ionicons
-          name="analytics-outline"
-          size={22}
-          color={colors.textLight}
-        />
-      </View>
     </Animated.View>
   );
 }

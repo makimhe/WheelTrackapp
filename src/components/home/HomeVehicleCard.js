@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   vehicleBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.surfaceDark,
     borderRadius: 999,
     paddingHorizontal: 12,
     paddingVertical: 7,

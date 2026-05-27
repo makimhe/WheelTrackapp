@@ -16,7 +16,7 @@ const colors = {
   surfaceDarkSoft: '#2A2A2A',
 
   // Cor principal
-  primary: '#111111',
+  primary: '#ff6232',
   primaryDark: '#111111',
   primarySoft: 'rgba(17,17,17,0.08)',
   primaryGlow: 'rgba(17,17,17,0.14)',
@@ -51,7 +51,7 @@ const colors = {
 
   // Base
   white: '#FFFFFF',
-  black: '#111111',
+  black: '#1d1e1d',
 
   // Transparências
   whiteSoft: 'rgba(255,255,255,0.35)',

@@ -40,7 +40,7 @@ export default function HomeSummaryCard({ inProgressVehicles }) {
 const styles = StyleSheet.create({
   summaryCard: {
     backgroundColor: colors.black,
-    borderRadius: 34,
+    borderRadius: 20,
     padding: 22,
     marginBottom: 16,
 

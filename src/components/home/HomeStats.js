@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     backgroundColor: colors.surfaceSoft,
-    borderRadius: 24,
+    borderRadius: 20,
     paddingVertical: 15,
     alignItems: 'center',
     marginRight: 10,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   statCardLast: {
     flex: 1,
     backgroundColor: colors.surfaceSoft,
-    borderRadius: 24,
+    borderRadius: 20,
     paddingVertical: 15,
     alignItems: 'center',
 
@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.black,
     alignItems: 'center',
     justifyContent: 'center',
   },
