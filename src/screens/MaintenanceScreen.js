@@ -1,6 +1,6 @@
 // Tela de Manutenção — status do veículo e agendamentos
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import {
   View,
@@ -10,75 +10,46 @@ import {
   StyleSheet,
   Alert,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { maintenance } from '../services/mockData';
+import { getVeiculosDoUsuario, getManutencoesDoVeiculo } from '../services/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
-// Card pequeno com informação da manutenção
+function formatarData(valor) {
+  if (!valor) return 'Sem data';
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return String(valor);
+  return data.toLocaleDateString('pt-BR');
+}
+
 function InfoCard({ icon, label, value, valueColor, index }) {
-  // Animação de entrada do card
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim  = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
 
   useEffect(() => {
-    // Faz cada card aparecer um pouco depois do outro
     Animated.sequence([
       Animated.delay(index * 90),
-
       Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 320,
-          useNativeDriver: true,
-        }),
-
-        Animated.spring(slideAnim, {
-          toValue: 0,
-          friction: 8,
-          tension: 70,
-          useNativeDriver: true,
-        }),
+        Animated.timing(fadeAnim, { toValue: 1, duration: 320, useNativeDriver: true }),
+        Animated.spring(slideAnim, { toValue: 0, friction: 8, tension: 70, useNativeDriver: true }),
       ]),
     ]).start();
   }, [index]);
 
   return (
-    <Animated.View
-      style={[
-        styles.infoCard,
-        {
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        },
-      ]}
-    >
+    <Animated.View style={[styles.infoCard, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
       <View style={styles.infoIcon}>
-        <Ionicons
-          name={icon}
-          size={18}
-          color={colors.textLight}
-        />
+        <Ionicons name={icon} size={18} color={colors.textLight} />
       </View>
-
       <View style={styles.infoTextBox}>
-        <Text style={styles.infoLabel}>
-          {label}
-        </Text>
-
-        <Text
-          style={[
-            styles.infoValue,
-            valueColor && {
-              color: valueColor,
-            },
-          ]}
-          numberOfLines={1}
-        >
+        <Text style={styles.infoLabel}>{label}</Text>
+        <Text style={[styles.infoValue, valueColor && { color: valueColor }]} numberOfLines={1}>
           {value}
         </Text>
       </View>
@@ -89,275 +60,189 @@ function InfoCard({ icon, label, value, valueColor, index }) {
 export default function MaintenanceScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
-  // Animação da barra de integridade
+  const [loading, setLoading]           = useState(true);
+  const [manutencoes, setManutencoes]   = useState([]);
+  const [nomeVeiculo, setNomeVeiculo]   = useState('');
+
+  // Animações
   const integrityAnim = useRef(new Animated.Value(0)).current;
-
-  // Animações do cabeçalho
-  const headerFade = useRef(new Animated.Value(0)).current;
-  const headerSlide = useRef(new Animated.Value(18)).current;
-
-  // Animações do card principal
-  const cardFade = useRef(new Animated.Value(0)).current;
-  const cardSlide = useRef(new Animated.Value(24)).current;
-
-  // Garante que a integridade fique entre 0 e 100
-  const integrityValue = Math.min(maintenance.structuralIntegrity || 0, 100);
+  const headerFade    = useRef(new Animated.Value(0)).current;
+  const headerSlide   = useRef(new Animated.Value(18)).current;
+  const cardFade      = useRef(new Animated.Value(0)).current;
+  const cardSlide     = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
-    // Entrada animada do cabeçalho, card e barra
+    async function carregar() {
+      try {
+        const id       = await AsyncStorage.getItem('id');
+        const veiculos = await getVeiculosDoUsuario(id);
+
+        if (veiculos.length === 0) { setLoading(false); return; }
+
+        const veiculo = veiculos[0];
+        setNomeVeiculo(veiculo.modelo || veiculo.placa);
+
+        const manutRaw = await getManutencoesDoVeiculo(veiculo.placa).catch(() => []);
+        setManutencoes(manutRaw);
+
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar as manutenções.');
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregar();
+  }, []);
+
+  // Calcula dados para exibição
+  const manutConcluidas  = manutencoes.filter(m => m.status === 'CONCLUIDO');
+  const manutEmAndamento = manutencoes.filter(m => m.status === 'EM_ANDAMENTO');
+  const ultimaManut      = manutConcluidas[manutConcluidas.length - 1];
+  const proximaManut     = manutEmAndamento[0] || manutencoes.find(m => m.status === 'PENDENTE');
+
+  const integrityValue = manutencoes.length === 0 ? 94
+    : Math.round((manutConcluidas.length / manutencoes.length) * 100);
+
+  useEffect(() => {
+    if (loading) return;
+
     Animated.parallel([
-      Animated.timing(headerFade, {
-        toValue: 1,
-        duration: 420,
-        useNativeDriver: true,
-      }),
-
-      Animated.spring(headerSlide, {
-        toValue: 0,
-        friction: 8,
-        tension: 70,
-        useNativeDriver: true,
-      }),
-
+      Animated.timing(headerFade, { toValue: 1, duration: 420, useNativeDriver: true }),
+      Animated.spring(headerSlide, { toValue: 0, friction: 8, tension: 70, useNativeDriver: true }),
       Animated.sequence([
         Animated.delay(180),
-
         Animated.parallel([
-          Animated.timing(cardFade, {
-            toValue: 1,
-            duration: 420,
-            useNativeDriver: true,
-          }),
-
-          Animated.spring(cardSlide, {
-            toValue: 0,
-            friction: 8,
-            tension: 70,
-            useNativeDriver: true,
-          }),
-
-          Animated.timing(integrityAnim, {
-            toValue: integrityValue,
-            duration: 1000,
-            useNativeDriver: false,
-          }),
+          Animated.timing(cardFade, { toValue: 1, duration: 420, useNativeDriver: true }),
+          Animated.spring(cardSlide, { toValue: 0, friction: 8, tension: 70, useNativeDriver: true }),
+          Animated.timing(integrityAnim, { toValue: integrityValue, duration: 1000, useNativeDriver: false }),
         ]),
       ]),
     ]).start();
-  }, []);
+  }, [loading]);
 
-  // Transforma o número da integridade em largura da barra
   const integrityWidth = integrityAnim.interpolate({
     inputRange: [0, 100],
     outputRange: ['0%', '100%'],
   });
 
-  // Ação do botão de agendar manutenção
-  const handleSchedule = () => {
-    Alert.alert('Agendamento', 'Abrindo agenda para manutenção...');
-  };
+  const handleSchedule  = () => Alert.alert('Agendamento', 'Abrindo agenda para manutenção...');
+  const handleReport    = () => Alert.alert('Ocorrência', 'Formulário de ocorrência em breve.');
+  const handleEmergency = () => Alert.alert('Inspeção de Emergência', 'Para impactos estruturais, entre em contato imediatamente.', [{ text: 'Cancelar', style: 'cancel' }, { text: 'WhatsApp', onPress: () => console.log('Abre WhatsApp') }]);
+  const handleWhatsapp  = () => Alert.alert('WhatsApp', 'Abrindo atendimento no WhatsApp...');
 
-  // Ação do botão de reportar ocorrência
-  const handleReport = () => {
-    Alert.alert('Ocorrência', 'Formulário de ocorrência em breve.');
-  };
-
-  // Ação do botão de emergência
-  const handleEmergency = () => {
-    Alert.alert(
-      'Inspeção de Emergência',
-      'Para impactos estruturais, entre em contato imediatamente.',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'WhatsApp',
-          onPress: () => console.log('Abre WhatsApp'),
-        },
-      ]
+  if (loading) {
+    return (
+      <View style={[styles.screen, styles.centered]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
     );
-  };
-
-  // Ação do botão de WhatsApp
-  const handleWhatsapp = () => {
-    Alert.alert('WhatsApp', 'Abrindo atendimento no WhatsApp...');
-  };
+  }
 
   return (
     <View style={styles.screen}>
-      {/* Luzes decorativas no fundo */}
       <View style={styles.glowOne} />
       <View style={styles.glowTwo} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         bounces={false}
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingTop: insets.top + 20,
-            paddingBottom: insets.bottom + 120,
-          },
-        ]}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 120 }]}
       >
-        {/* Cabeçalho da tela */}
-        <Animated.View
-          style={[
-            styles.header,
-            {
-              opacity: headerFade,
-              transform: [{ translateY: headerSlide }],
-            },
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.backButton}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('Home')}
-          >
-            <Ionicons
-              name="chevron-back"
-              size={22}
-              color={colors.textPrimary}
-            />
+        {/* Cabeçalho */}
+        <Animated.View style={[styles.header, { opacity: headerFade, transform: [{ translateY: headerSlide }] }]}>
+          <TouchableOpacity style={styles.backButton} activeOpacity={0.8} onPress={() => navigation.navigate('Home')}>
+            <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
-
           <View style={styles.headerTextBox}>
-            <Text style={styles.headerSmall}>
-              Cuidados da blindagem
-            </Text>
-
-            <Text style={styles.headerTitle}>
-              Manutenção
-            </Text>
+            <Text style={styles.headerSmall}>Cuidados da blindagem</Text>
+            <Text style={styles.headerTitle}>Manutenção</Text>
           </View>
 
           
         </Animated.View>
 
-        {/* Card principal com status da blindagem */}
-        <Animated.View
-          style={[
-            styles.heroCard,
-            {
-              opacity: cardFade,
-              transform: [{ translateY: cardSlide }],
-            },
-          ]}
-        >
+        {/* Card principal */}
+        <Animated.View style={[styles.heroCard, { opacity: cardFade, transform: [{ translateY: cardSlide }] }]}>
           <View style={styles.heroTop}>
             <View style={styles.heroTextBox}>
-              <Text style={styles.heroTitle}>
-                Revisão geral da blindagem
-              </Text>
-
-              <Text style={styles.heroSubtitle}>
-                Revisão anual obrigatória para manutenção da garantia.
-              </Text>
+              <Text style={styles.heroTitle}>Revisão geral da blindagem</Text>
+              <Text style={styles.heroSubtitle}>Revisão anual obrigatória para manutenção da garantia.</Text>
             </View>
-
             <View style={styles.statusBadge}>
-              <Ionicons
-                name="shield-checkmark"
-                size={15}
-                color={colors.primary}
-              />
-
-              <Text style={styles.statusBadgeText}>
-                {maintenance.warrantyStatus}
-              </Text>
+              <Ionicons name="shield-checkmark" size={15} color={colors.primary} />
+              <Text style={styles.statusBadgeText}>Garantia ativa</Text>
             </View>
           </View>
 
-          {/* Barra de integridade estrutural */}
           <View style={styles.integrityBox}>
             <View style={styles.integrityHeader}>
               <View>
-                <Text style={styles.integrityLabel}>
-                  Integridade estrutural
-                </Text>
-
-                <Text style={styles.integritySub}>
-                  Status técnico atual do veículo
-                </Text>
+                <Text style={styles.integrityLabel}>Integridade estrutural</Text>
+                <Text style={styles.integritySub}>Status técnico atual do veículo</Text>
               </View>
-
-              <Text style={styles.integrityValue}>
-                {integrityValue}%
-              </Text>
+              <Text style={styles.integrityValue}>{integrityValue}%</Text>
             </View>
-
             <View style={styles.integrityBar}>
-              <Animated.View
-                style={[
-                  styles.integrityFill,
-                  {
-                    width: integrityWidth,
-                  },
-                ]}
-              />
+              <Animated.View style={[styles.integrityFill, { width: integrityWidth }]} />
             </View>
           </View>
 
-          {/* Selo de aprovação */}
           <View style={styles.approvalTag}>
-            <Ionicons
-              name="checkmark-circle"
-              size={17}
-              color={colors.primary}
-            />
-
-            <Text style={styles.approvalText}>
-              Veículo dentro dos padrões técnicos recomendados
-            </Text>
+            <Ionicons name="checkmark-circle" size={17} color={colors.primary} />
+            <Text style={styles.approvalText}>Veículo dentro dos padrões técnicos recomendados</Text>
           </View>
         </Animated.View>
 
         {/* Cards com dados rápidos */}
         <View style={styles.infoGrid}>
-          <InfoCard
-            index={0}
-            icon="calendar-outline"
-            label="Última manutenção"
-            value={maintenance.lastMaintenance}
-          />
-
-          <InfoCard
-            index={1}
-            icon="time-outline"
-            label="Próxima revisão"
-            value={maintenance.nextRevision}
-            valueColor={colors.primaryDark}
-          />
-
-          <InfoCard
-            index={2}
-            icon="shield-checkmark-outline"
-            label="Garantia"
-            value={maintenance.warrantyStatus}
-            valueColor={colors.primaryDark}
-          />
+          <InfoCard index={0} icon="calendar-outline" label="Última manutenção"
+            value={ultimaManut ? formatarData(ultimaManut.data_fim || ultimaManut.data_inicio) : 'Sem registro'} />
+          <InfoCard index={1} icon="time-outline" label="Próxima revisão"
+            value={proximaManut ? (proximaManut.tipo || 'Manutenção pendente') : 'Nenhuma agendada'}
+            valueColor={colors.primaryDark} />
+          <InfoCard index={2} icon="shield-checkmark-outline" label="Garantia"
+            value="Ativa" valueColor={colors.primaryDark} />
         </View>
 
-        {/* Título da área de ações */}
+        {/* Manutenções do backend */}
+        {manutencoes.length > 0 && (
+          <>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Histórico</Text>
+              <Text style={styles.sectionHint}>{manutencoes.length} registro(s)</Text>
+            </View>
+
+            {manutencoes.map((m) => (
+              <View key={m.id} style={styles.manutCard}>
+                <View style={styles.manutLeft}>
+                  <Text style={styles.manutTipo} numberOfLines={1}>{m.tipo}</Text>
+                  <Text style={styles.manutDesc} numberOfLines={2}>{m.descricao}</Text>
+                  <Text style={styles.manutData}>
+                    {m.data_inicio ? formatarData(m.data_inicio) : 'Sem data'}
+                  </Text>
+                </View>
+                <View style={[styles.manutStatus,
+                  m.status === 'CONCLUIDO'    && styles.manutStatusDone,
+                  m.status === 'EM_ANDAMENTO' && styles.manutStatusActive,
+                ]}>
+                  <Text style={styles.manutStatusText}>
+                    {m.status === 'CONCLUIDO' ? 'Concluído' : m.status === 'EM_ANDAMENTO' ? 'Em andamento' : 'Pendente'}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
+
+        {/* Ações */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>
-            Ações disponíveis
-          </Text>
-
-          <Text style={styles.sectionHint}>
-            Escolha uma opção
-          </Text>
+          <Text style={styles.sectionTitle}>Ações disponíveis</Text>
+          <Text style={styles.sectionHint}>Escolha uma opção</Text>
         </View>
 
-        {/* Botão principal de agendamento */}
-        <TouchableOpacity
-          style={styles.primaryButton}
-          activeOpacity={0.88}
-          onPress={handleSchedule}
-        >
+        <TouchableOpacity style={styles.primaryButton} activeOpacity={0.88} onPress={handleSchedule}>
           <View style={styles.primaryButtonIcon}>
             <Ionicons
               name="calendar"
@@ -365,25 +250,14 @@ export default function MaintenanceScreen({ navigation }) {
               color={colors.white}
             />
           </View>
-
           <View style={styles.primaryButtonTextBox}>
-            <Text style={styles.primaryButtonText}>
-              Agendar manutenção
-            </Text>
-
-            <Text style={styles.primaryButtonSub}>
-              Escolha uma data para revisão
-            </Text>
+            <Text style={styles.primaryButtonText}>Agendar manutenção</Text>
+            <Text style={styles.primaryButtonSub}>Escolha uma data para revisão</Text>
           </View>
         </TouchableOpacity>
 
-        {/* Ações secundárias */}
         <View style={styles.actionGrid}>
-          <TouchableOpacity
-            style={styles.actionCard}
-            activeOpacity={0.88}
-            onPress={handleReport}
-          >
+          <TouchableOpacity style={styles.actionCard} activeOpacity={0.88} onPress={handleReport}>
             <View style={styles.actionIconWarning}>
               <Ionicons
                 name="warning-outline"
@@ -391,21 +265,11 @@ export default function MaintenanceScreen({ navigation }) {
                 color={colors.black}
               />
             </View>
-
-            <Text style={styles.actionTitle}>
-              Reportar ocorrência
-            </Text>
-
-            <Text style={styles.actionText}>
-              Informe danos ou alterações percebidas.
-            </Text>
+            <Text style={styles.actionTitle}>Reportar ocorrência</Text>
+            <Text style={styles.actionText}>Informe danos ou alterações percebidas.</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionCardLast}
-            activeOpacity={0.88}
-            onPress={handleEmergency}
-          >
+          <TouchableOpacity style={styles.actionCardLast} activeOpacity={0.88} onPress={handleEmergency}>
             <View style={styles.actionIconDanger}>
               <Ionicons
                 name="alert-circle-outline"
@@ -413,47 +277,23 @@ export default function MaintenanceScreen({ navigation }) {
                 color={colors.black}
               />
             </View>
-
-            <Text style={styles.actionTitle}>
-              Inspeção emergencial
-            </Text>
-
-            <Text style={styles.actionText}>
-              Para impactos estruturais ou urgências.
-            </Text>
+            <Text style={styles.actionTitle}>Inspeção emergencial</Text>
+            <Text style={styles.actionText}>Para impactos estruturais ou urgências.</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Aviso importante */}
         <View style={styles.warningCard}>
           <View style={styles.warningIcon}>
-            <Ionicons
-              name="information-circle-outline"
-              size={20}
-              color={colors.warning}
-            />
+            <Ionicons name="information-circle-outline" size={20} color={colors.warning} />
           </View>
-
           <Text style={styles.warningText}>
             Impactos estruturais devem ser inspecionados imediatamente para manter a segurança e a garantia da blindagem.
           </Text>
         </View>
 
-        {/* Botão de atendimento */}
-        <TouchableOpacity
-          style={styles.whatsappButton}
-          activeOpacity={0.88}
-          onPress={handleWhatsapp}
-        >
-          <Ionicons
-            name="logo-whatsapp"
-            size={19}
-            color={colors.textLight}
-          />
-
-          <Text style={styles.whatsappText}>
-            Fale conosco no WhatsApp
-          </Text>
+        <TouchableOpacity style={styles.whatsappButton} activeOpacity={0.88} onPress={handleWhatsapp}>
+          <Ionicons name="logo-whatsapp" size={19} color={colors.textLight} />
+          <Text style={styles.whatsappText}>Fale conosco no WhatsApp</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

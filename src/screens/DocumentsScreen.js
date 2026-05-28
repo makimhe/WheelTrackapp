@@ -10,106 +10,91 @@ import {
   StyleSheet,
   Alert,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system/legacy';
+import * as Sharing from 'expo-sharing';
 
-import { documents } from '../services/mockData';
+import { getDocumentoDownloadUrl, getDocumentosPorPlaca, getVeiculosDoUsuario } from '../services/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
-// Item animado de cada documento
-function AnimatedDocumentItem({ doc, index }) {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
+function formatarData(valor) {
+  if (!valor) return 'Sem data';
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return String(valor);
+  return data.toLocaleDateString('pt-BR');
+}
+
+function formatarDocumento(doc) {
+  return {
+    id: String(doc.id || doc.nome || doc.name),
+    name: doc.nome_arquivo || doc.nome || doc.name || doc.titulo || 'Documento',
+    size: doc.tamanho || doc.size || '-',
+    date: formatarData(doc.data_upload || doc.data || doc.createdAt),
+    type: doc.tipo_arquivo || doc.tipo || doc.type || 'PDF',
+    url: doc.url || doc.arquivo_url || doc.documento_url || getDocumentoDownloadUrl(doc.id),
+    category: doc.tipo_documento || doc.categoria || doc.category || 'Documentos principais',
+  };
+}
+
+function agruparDocumentos(documentos) {
+  const grupos = documentos.reduce((acc, doc) => {
+    const categoria = doc.category || 'Documentos principais';
+    if (!acc[categoria]) {
+      acc[categoria] = { id: categoria, category: categoria, items: [] };
+    }
+    acc[categoria].items.push(doc);
+    return acc;
+  }, {});
+  return Object.values(grupos);
+}
+
+function AnimatedDocumentItem({ doc, index, onDownload }) {
+  const fadeAnim  = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.sequence([
       Animated.delay(index * 70),
-
       Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 320,
-          useNativeDriver: true,
-        }),
-
-        Animated.spring(slideAnim, {
-          toValue: 0,
-          friction: 8,
-          tension: 70,
-          useNativeDriver: true,
-        }),
+        Animated.timing(fadeAnim, { toValue: 1, duration: 320, useNativeDriver: true }),
+        Animated.spring(slideAnim, { toValue: 0, friction: 8, tension: 70, useNativeDriver: true }),
       ]),
     ]).start();
   }, [index]);
 
-  // Efeito de apertar o item
   const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.98,
-      friction: 5,
-      tension: 120,
-      useNativeDriver: true,
-    }).start();
+    Animated.spring(scaleAnim, { toValue: 0.98, friction: 5, tension: 120, useNativeDriver: true }).start();
   };
 
-  // Volta ao tamanho normal
   const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 5,
-      tension: 120,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  // Simula download do documento
-  const handleDownload = () => {
-    Alert.alert('Download', `Baixando: ${doc.name}`);
+    Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 120, useNativeDriver: true }).start();
   };
 
   return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [
-          { translateY: slideAnim },
-          { scale: scaleAnim },
-        ],
-      }}
-    >
+    <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }, { scale: scaleAnim }] }}>
       <TouchableOpacity
         style={styles.docItem}
         activeOpacity={0.9}
-        onPress={handleDownload}
+        onPress={() => onDownload(doc)}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
       >
         <View style={styles.docIcon}>
-          <Ionicons
-            name="document-text"
-            size={20}
-            color={colors.textLight}
-          />
+          <Ionicons name="document-text" size={20} color={colors.textLight} />
         </View>
 
         <View style={styles.docInfo}>
-          <Text
-            style={styles.docName}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+          <Text style={styles.docName} numberOfLines={1} ellipsizeMode="tail">
             {doc.name}
           </Text>
-
-          <Text
-            style={styles.docMeta}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
+          <Text style={styles.docMeta} numberOfLines={1} ellipsizeMode="tail">
             {doc.type} · {doc.size} · {doc.date}
           </Text>
         </View>
@@ -133,142 +118,149 @@ function AnimatedDocumentItem({ doc, index }) {
 export default function DocumentsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
-  // Filtro ativo dos documentos
   const [activeFilter, setActiveFilter] = useState('Todos');
+  const [loading, setLoading]           = useState(true);
+  const [documents, setDocuments]       = useState([]);
+  const [downloading, setDownloading]   = useState(null); // id do doc sendo baixado
 
-  // Conta todos os documentos
-  const allDocsCount = documents.reduce(
-    (total, category) => total + category.items.length,
-    0
-  );
+  useEffect(() => {
+    async function carregarDocumentos() {
+      try {
+        const id      = await AsyncStorage.getItem('id');
+        const veiculos = await getVeiculosDoUsuario(id);
 
-  // Filtros da tela
+        if (!veiculos.length) { setDocuments([]); return; }
+
+        const documentosPorVeiculo = await Promise.all(
+          veiculos.map((v) => getDocumentosPorPlaca(v.placa).catch(() => []))
+        );
+
+        const documentosRaw       = documentosPorVeiculo.flat();
+        const documentosFormatados = documentosRaw.map(formatarDocumento);
+        setDocuments(agruparDocumentos(documentosFormatados));
+      } catch (error) {
+        Alert.alert('Erro', 'Não foi possível carregar os documentos.');
+        setDocuments([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarDocumentos();
+  }, []);
+
+  // ─── Download sem sair do app ─────────────────────────────────────────────
+  const handleDownload = async (doc) => {
+    if (!doc.url) {
+      Alert.alert('Documento', 'Este documento ainda não possui arquivo para download.');
+      return;
+    }
+
+    try {
+      setDownloading(doc.id);
+
+      // Nome do arquivo limpo
+      const nomeArquivo = doc.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const destino     = FileSystem.documentDirectory + nomeArquivo;
+
+      // Baixa o arquivo
+      const { uri } = await FileSystem.downloadAsync(doc.url, destino);
+
+      // Abre menu nativo de compartilhamento/visualização
+      const podeCompartilhar = await Sharing.isAvailableAsync();
+
+      if (podeCompartilhar) {
+        await Sharing.shareAsync(uri, {
+          mimeType: doc.type === 'PDF' ? 'application/pdf' : 'application/octet-stream',
+          dialogTitle: doc.name,
+        });
+      } else {
+        Alert.alert('Sucesso', `Arquivo salvo em: ${uri}`);
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível baixar o arquivo.');
+      console.error('Erro no download:', error);
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    const todosOsDocs = documents.flatMap((cat) => cat.items);
+    if (todosOsDocs.length === 0) {
+      Alert.alert('Aviso', 'Nenhum documento disponível.');
+      return;
+    }
+    // Baixa o primeiro documento como demonstração
+    // Para baixar todos seria necessário zipar, o que requer lib adicional
+    Alert.alert(
+      'Baixar todos',
+      'Abra cada documento individualmente para salvar. O download em lote estará disponível em breve.',
+    );
+  };
+
+  const allDocsCount = documents.reduce((total, cat) => total + cat.items.length, 0);
+
   const filters = [
-    {
-      key: 'Todos',
-      label: 'Todos',
-    },
-    {
-      key: 'Contratos',
-      label: 'Contratos',
-    },
-    {
-      key: 'Laudos',
-      label: 'Laudos',
-    },
+    { key: 'Todos',     label: 'Todos'     },
+    { key: 'Contratos', label: 'Contratos' },
+    { key: 'Laudos',    label: 'Laudos'    },
   ];
 
-  // Filtra documentos por categoria
   const filteredDocs = documents.filter((category) => {
-    const normalizedCategory = category.category.toLowerCase();
-
-    if (activeFilter === 'Todos') {
-      return true;
-    }
-
-    if (activeFilter === 'Contratos') {
-      return (
-        normalizedCategory.includes('principais') ||
-        normalizedCategory.includes('garantias') ||
-        normalizedCategory.includes('manuais')
-      );
-    }
-
-    if (activeFilter === 'Laudos') {
-      return (
-        normalizedCategory.includes('laudos') ||
-        normalizedCategory.includes('anexos')
-      );
-    }
-
+    const norm = category.category.toLowerCase();
+    if (activeFilter === 'Todos')     return true;
+    if (activeFilter === 'Contratos') return norm.includes('principais') || norm.includes('garantias') || norm.includes('manuais');
+    if (activeFilter === 'Laudos')    return norm.includes('laudos') || norm.includes('anexos');
     return true;
   });
 
-  // Conta documentos filtrados
-  const filteredDocsCount = filteredDocs.reduce(
-    (total, category) => total + category.items.length,
-    0
-  );
+  const filteredDocsCount = filteredDocs.reduce((total, cat) => total + cat.items.length, 0);
 
-  // Simula download de todos os documentos
-  const handleDownloadAll = () => {
-    Alert.alert('Download', 'Baixando todos os documentos em PDF...');
-  };
+  if (loading) {
+    return (
+      <View style={[styles.screen, styles.centered]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>
-      {/* Luzes decorativas do fundo */}
       <View style={styles.glowOne} />
       <View style={styles.glowTwo} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         bounces={false}
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingTop: insets.top + 20,
-            paddingBottom: insets.bottom + 120,
-          },
-        ]}
+        contentContainerStyle={[styles.content, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 120 }]}
       >
         {/* Cabeçalho */}
         <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('Home')}
-          >
-            <Ionicons
-              name="chevron-back"
-              size={22}
-              color={colors.textPrimary}
-            />
+          <TouchableOpacity style={styles.backButton} activeOpacity={0.8} onPress={() => navigation.navigate('Home')}>
+            <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
 
           <View style={styles.headerTextBox}>
-            <Text style={styles.headerSmall}>
-              Arquivos da blindagem
-            </Text>
-
-            <Text style={styles.headerTitle}>
-              Documentos
-            </Text>
+            <Text style={styles.headerSmall}>Arquivos da blindagem</Text>
+            <Text style={styles.headerTitle}>Documentos</Text>
           </View>
 
           
         </View>
 
-        {/* Card de resumo */}
+        {/* Card resumo */}
         <View style={styles.summaryCard}>
           <View style={styles.summaryTextBox}>
-            <Text style={styles.summaryTitle}>
-              {allDocsCount} documentos salvos
-            </Text>
-
-            <Text style={styles.summaryText}>
-              Contratos, certificados, laudos e manuais da blindagem.
-            </Text>
-
+            <Text style={styles.summaryTitle}>{allDocsCount} documentos salvos</Text>
+            <Text style={styles.summaryText}>Contratos, certificados, laudos e manuais da blindagem.</Text>
             <View style={styles.warrantyBadge}>
-              <Ionicons
-                name="shield-checkmark"
-                size={13}
-                color={colors.primary}
-              />
-
-              <Text style={styles.warrantyText}>
-                Garantia ativa
-              </Text>
+              <Ionicons name="shield-checkmark" size={13} color={colors.primary} />
+              <Text style={styles.warrantyText}>Garantia ativa</Text>
             </View>
           </View>
-
           <View style={styles.summaryIcon}>
-            <Ionicons
-              name="document-lock-outline"
-              size={28}
-              color={colors.primary}
-            />
+            <Ionicons name="document-lock-outline" size={28} color={colors.primary} />
           </View>
         </View>
 
@@ -276,25 +268,14 @@ export default function DocumentsScreen({ navigation }) {
         <View style={styles.filters}>
           {filters.map((item) => {
             const isActive = activeFilter === item.key;
-
             return (
               <TouchableOpacity
                 key={item.key}
-                style={[
-                  styles.filterButton,
-                  isActive && styles.filterButtonActive,
-                ]}
+                style={[styles.filterButton, isActive && styles.filterButtonActive]}
                 activeOpacity={0.85}
                 onPress={() => setActiveFilter(item.key)}
               >
-                <Text
-                  style={[
-                    styles.filterText,
-                    isActive && styles.filterTextActive,
-                  ]}
-                >
-                  {item.label}
-                </Text>
+                <Text style={[styles.filterText, isActive && styles.filterTextActive]}>{item.label}</Text>
               </TouchableOpacity>
             );
           })}
@@ -303,48 +284,25 @@ export default function DocumentsScreen({ navigation }) {
         {/* Título da seção */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>
-            {activeFilter === 'Todos'
-              ? 'Todos os arquivos'
-              : activeFilter}
+            {activeFilter === 'Todos' ? 'Todos os arquivos' : activeFilter}
           </Text>
-
-          <Text style={styles.sectionCount}>
-            {filteredDocsCount} itens
-          </Text>
+          <Text style={styles.sectionCount}>{filteredDocsCount} itens</Text>
         </View>
 
-        {/* Lista de categorias */}
+        {/* Lista */}
         {filteredDocs.length === 0 ? (
           <View style={styles.emptyBox}>
-            <Ionicons
-              name="folder-open-outline"
-              size={38}
-              color={colors.textMuted}
-            />
-
-            <Text style={styles.emptyTitle}>
-              Nenhum documento encontrado
-            </Text>
-
-            <Text style={styles.emptyText}>
-              Tente escolher outro filtro.
-            </Text>
+            <Ionicons name="folder-open-outline" size={38} color={colors.textMuted} />
+            <Text style={styles.emptyTitle}>Nenhum documento encontrado</Text>
+            <Text style={styles.emptyText}>Tente escolher outro filtro.</Text>
           </View>
         ) : (
           filteredDocs.map((category) => (
-            <View
-              key={category.id}
-              style={styles.categoryCard}
-            >
+            <View key={category.id} style={styles.categoryCard}>
               <View style={styles.categoryHeader}>
                 <View>
-                  <Text style={styles.categoryTitle}>
-                    {category.category}
-                  </Text>
-
-                  <Text style={styles.categorySubtitle}>
-                    {category.items.length} arquivos disponíveis
-                  </Text>
+                  <Text style={styles.categoryTitle}>{category.category}</Text>
+                  <Text style={styles.categorySubtitle}>{category.items.length} arquivos disponíveis</Text>
                 </View>
 
                 
@@ -356,6 +314,7 @@ export default function DocumentsScreen({ navigation }) {
                     key={`${category.id}-${doc.name}`}
                     doc={doc}
                     index={index}
+                    onDownload={handleDownload}
                   />
                 ))}
               </View>
@@ -363,21 +322,10 @@ export default function DocumentsScreen({ navigation }) {
           ))
         )}
 
-        {/* Botão de baixar todos */}
-        <TouchableOpacity
-          style={styles.downloadAllBtn}
-          activeOpacity={0.88}
-          onPress={handleDownloadAll}
-        >
-          <Ionicons
-            name="download-outline"
-            size={19}
-            color={colors.textLight}
-          />
-
-          <Text style={styles.downloadAllText}>
-            Baixar todos em PDF
-          </Text>
+        {/* Botão baixar todos */}
+        <TouchableOpacity style={styles.downloadAllBtn} activeOpacity={0.88} onPress={handleDownloadAll}>
+          <Ionicons name="download-outline" size={19} color={colors.textLight} />
+          <Text style={styles.downloadAllText}>Baixar todos em PDF</Text>
         </TouchableOpacity>
 
         <Text style={styles.legalNote}>

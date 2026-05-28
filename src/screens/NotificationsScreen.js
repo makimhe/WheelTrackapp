@@ -9,14 +9,76 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { notifications, vehicles } from '../services/mockData';
+import {
+  getBlindagemPorPlaca,
+  getEtapasPorBlindagem,
+  getVeiculosDoUsuario,
+} from '../services/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+
+function formatarHora(valor) {
+  if (!valor) return '--:--';
+
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return String(valor);
+
+  return data.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function statusParaLabel(status) {
+  if (status?.toUpperCase() === 'CONCLUIDO') return 'etapa concluida';
+  if (status?.toUpperCase() === 'EM_ANDAMENTO') return 'etapa em andamento';
+  return 'etapa pendente';
+}
+
+function formatarStatus(statusBackend) {
+  if (statusBackend?.toUpperCase() === 'CONCLUIDO') return 'Concluido';
+  if (statusBackend?.toUpperCase() === 'EM_ANDAMENTO') return 'Em andamento';
+  return 'Pendente';
+}
+
+function formatarVeiculo(v, blindagem) {
+  const status = formatarStatus(blindagem?.status);
+
+  return {
+    id: v.placa,
+    model: v.modelo || `Veiculo ${v.placa}`,
+    plate: v.placa,
+    status,
+    progress: status === 'Concluido' ? 100 : status === 'Em andamento' ? 50 : 0,
+    blindingLevel: blindagem?.nivel_blindagem || blindagem?.nivelBlindagem || '-',
+    currentStep: status,
+    image: v.foto_url ? v.foto_url : require('../../assets/cars/byd.png'),
+    blindagemId: blindagem?.id || null,
+  };
+}
+
+function notificacoesPorEtapas(veiculo, blindagem, etapas) {
+  return etapas
+    .filter((etapa) => etapa.status?.toUpperCase() !== 'PENDENTE')
+    .map((etapa) => ({
+      id: `${veiculo.placa}-${etapa.id}`,
+      vehicle: veiculo.modelo || veiculo.placa,
+      plate: veiculo.placa,
+      step: etapa.etapa || etapa.nome || etapa.descricao || 'Etapa da blindagem',
+      label: statusParaLabel(etapa.status),
+      time: formatarHora(etapa.updatedAt || etapa.data_atualizacao || etapa.createdAt),
+      read: etapa.status?.toUpperCase() === 'CONCLUIDO',
+      vehicleData: formatarVeiculo(veiculo, blindagem),
+    }));
+}
 
 // Card animado de cada notificação
 function AnimatedNotificationCard({
@@ -190,9 +252,42 @@ export default function NotificationsScreen({ navigation }) {
 
   // Filtro ativo da tela
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [vehicleList, setVehicleList] = useState([]);
 
   // Lista local para conseguir marcar notificações como lidas
-  const [notificationList, setNotificationList] = useState(notifications);
+  const [notificationList, setNotificationList] = useState([]);
+
+  useEffect(() => {
+    async function carregarNotificacoes() {
+      try {
+        const id = await AsyncStorage.getItem('id');
+        const veiculosRaw = await getVeiculosDoUsuario(id);
+        const veiculosComBlindagem = [];
+        const notificacoesGeradas = [];
+
+        for (const veiculo of veiculosRaw) {
+          const blindagem = await getBlindagemPorPlaca(veiculo.placa).catch(() => null);
+          veiculosComBlindagem.push(formatarVeiculo(veiculo, blindagem));
+
+          if (blindagem?.id) {
+            const etapas = await getEtapasPorBlindagem(blindagem.id).catch(() => []);
+            notificacoesGeradas.push(...notificacoesPorEtapas(veiculo, blindagem, etapas));
+          }
+        }
+
+        setVehicleList(veiculosComBlindagem);
+        setNotificationList(notificacoesGeradas);
+      } catch (error) {
+        Alert.alert('Erro', 'Nao foi possivel carregar as notificacoes.');
+        setNotificationList([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarNotificacoes();
+  }, []);
 
   // Contadores principais
   const unreadCount = notificationList.filter((n) => !n.read).length;
@@ -240,8 +335,11 @@ export default function NotificationsScreen({ navigation }) {
   // Abre a tela de progresso do veículo ligado à notificação
   const openVehicleProgress = (notification) => {
     const selectedVehicle =
-      vehicles.find((vehicle) => vehicle.model === notification.vehicle) ||
-      vehicles[0];
+      notification.vehicleData ||
+      vehicleList.find((vehicle) => vehicle.plate === notification.plate || vehicle.model === notification.vehicle) ||
+      vehicleList[0];
+
+    if (!selectedVehicle) return;
 
     navigation.navigate('Progresso', {
       vehicle: selectedVehicle,
@@ -266,6 +364,14 @@ export default function NotificationsScreen({ navigation }) {
       count: readCount,
     },
   ];
+
+  if (loading) {
+    return (
+      <View style={[styles.screen, styles.centered]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>
@@ -523,6 +629,11 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   glowOne: {
