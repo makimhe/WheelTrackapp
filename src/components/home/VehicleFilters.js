@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   },
 
   filterButtonActive: {
-    backgroundColor: colors.black,
+    backgroundColor: colors.primary,
   },
 
   filterText: {
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
 
   filterCountActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.white,
   },
 
   filterCountText: {

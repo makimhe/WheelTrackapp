@@ -22,7 +22,7 @@ export default function HomeStats({
         <View style={styles.statIconBlack}>
           <Ionicons
             name="car-sport"
-            size={18}
+            size={21}
             color={colors.textLight}
           />
         </View>
@@ -40,7 +40,7 @@ export default function HomeStats({
         <View style={styles.statIconPrimary}>
           <Ionicons
             name="time-outline"
-            size={18}
+            size={21}
             color={colors.white}
           />
         </View>
@@ -58,7 +58,7 @@ export default function HomeStats({
         <View style={styles.statIconLight}>
           <Ionicons
             name="checkmark-done"
-            size={18}
+            size={21}
             color={colors.white}
           />
         </View>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
 
   statValue: {
     fontSize: 22,
-    color: colors.textPrimary,
+    color: colors.primary,
     marginTop: 8,
     fontFamily: fonts.title,
   },

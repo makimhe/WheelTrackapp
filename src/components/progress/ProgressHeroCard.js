@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.black,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
 
   heroBadgeText: {
     fontSize: 11,
-    color: colors.primaryDark,
+    color: colors.white,
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
@@ -203,15 +203,16 @@ const styles = StyleSheet.create({
   },
 
   heroImage: {
-    width: '100%',
-    height: 190,
-    marginTop: 14,
-    marginBottom: 16,
-    borderRadius: 12,
+     width: '100%',
+    height: 200,
+    marginTop: 12,
+    marginBottom: 18,
+    alignSelf: 'center',
+    borderRadius: 29,
   },
 
   progressBox: {
-    backgroundColor: colors.surface,
+    backgroundColor: colors.white,
     borderRadius: 16,
     padding: 16,
   },

@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surfaceDark,
-    borderRadius: 999,
+    borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 7,
     maxWidth: '58%',
@@ -319,11 +319,12 @@ const styles = StyleSheet.create({
   },
 
   carImage: {
-    width: '100%',
-    height: 180,
+    width: '90%',
+    height: 190,
     marginTop: 12,
     marginBottom: 18,
     alignSelf: 'center',
+    borderRadius: 29,
   },
 
   vehicleInfoRow: {
@@ -397,7 +398,7 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 999,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary2,
   },
 
   cardFooter: {
@@ -428,7 +429,7 @@ const styles = StyleSheet.create({
 
   openButton: {
     height: 44,
-    borderRadius: 22,
+    borderRadius: 13,
     backgroundColor: colors.black,
     paddingHorizontal: 15,
 

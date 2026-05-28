@@ -8,15 +8,16 @@ const colors = {
 
   // Cards e superfícies claras
   surface: '#FFFFFF',
-  surfaceSoft: '#F4F4F2',
+  surfaceSoft: '#fafafa',
   surfaceMuted: '#E5E5E2',
 
   // Cards escuros
-  surfaceDark: '#111111',
+  surfaceDark: '#1b1b1bef',
   surfaceDarkSoft: '#2A2A2A',
 
   // Cor principal
-  primary: '#ff6232',
+  primary: '#fd4d17',
+  primary2: '#8aaf2c',
   primaryDark: '#111111',
   primarySoft: 'rgba(17,17,17,0.08)',
   primaryGlow: 'rgba(17,17,17,0.14)',
@@ -62,3 +63,6 @@ const colors = {
 };
 
 export default colors;
+
+//#EC3A02 
+//#9CB75A

@@ -21,9 +21,9 @@ export default function ProgressStats({
       <View style={styles.statCard}>
         <View style={styles.statIconDone}>
           <Ionicons
-            name="checkmark-done"
-            size={18}
-            color="#FFF"
+            name="checkmark-done-sharp"
+            size={21}
+            color="#fd4d17"
           />
         </View>
 
@@ -34,8 +34,8 @@ export default function ProgressStats({
       <View style={styles.statCard}>
         <View style={styles.statIconActive}>
           <Ionicons
-            name="time-outline"
-            size={18}
+            name="construct-outline"
+            size={21}
             color={colors.primary}
           />
         </View>
@@ -52,9 +52,9 @@ export default function ProgressStats({
       <View style={styles.statCardLast}>
         <View style={styles.statIconPending}>
           <Ionicons
-            name="ellipse-outline"
-            size={18}
-            color="#111"
+            name="timer-outline"
+            size={21}
+            color="#fd4d17"
           />
         </View>
 
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
 
   statCard: {
     flex: 1,
-    backgroundColor: colors.surfaceSoft,
-    borderRadius: 13,
+    backgroundColor: colors.surfaceDark,
+    borderRadius: 20,
     paddingVertical: 16,
     alignItems: 'center',
     marginRight: 10,
@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
 
   statCardLast: {
     flex: 1,
-    backgroundColor: colors.surfaceSoft,
-    borderRadius: 13,
+    backgroundColor: colors.surfaceDark,
+    borderRadius: 20,
     paddingVertical: 16,
     alignItems: 'center',
 
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -127,21 +127,21 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
   statValue: {
     fontSize: 22,
-    color: colors.textPrimary,
+    color: colors.white,
     marginTop: 8,
     fontFamily: fonts.title,
   },
 
   statLabel: {
     fontSize: 10,
-    color: colors.textSecondary,
+    color: colors.white,
     marginTop: 2,
     textAlign: 'center',
     fontFamily: fonts.body,
