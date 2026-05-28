@@ -264,14 +264,7 @@ const styles = StyleSheet.create({
   marginBottom: 26,
   overflow: 'visible',
 
-  shadowColor: colors.shadow,
-  shadowOffset: {
-    width: 0,
-    height: 0,
-  },
-  shadowOpacity: 0.13,
-  shadowRadius: 16,
-  elevation: 7,
+  
 },
 
   vehicleTop: {
@@ -283,8 +276,8 @@ const styles = StyleSheet.create({
   vehicleBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceDark,
-    borderRadius: 12,
+    backgroundColor: colors.black,
+    borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 7,
     maxWidth: '58%',
@@ -309,7 +302,7 @@ const styles = StyleSheet.create({
   },
 
   statusText: {
-    color: colors.textLight,
+    color: colors.white,
     fontSize: 11,
     fontFamily: fonts.subtitle,
   },
@@ -350,21 +343,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
   },
 
-  percentCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
-    backgroundColor: colors.black,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  percentCircleText: {
-    fontSize: 14,
-    color: colors.textLight,
-    fontFamily: fonts.button,
-  },
-
   progressSection: {
     marginTop: 24,
   },
@@ -398,7 +376,7 @@ const styles = StyleSheet.create({
   progressFill: {
     height: '100%',
     borderRadius: 999,
-    backgroundColor: colors.primary2,
+    backgroundColor: colors.primary,
   },
 
   cardFooter: {
@@ -429,7 +407,7 @@ const styles = StyleSheet.create({
 
   openButton: {
     height: 44,
-    borderRadius: 13,
+    borderRadius: 16,
     backgroundColor: colors.black,
     paddingHorizontal: 15,
 

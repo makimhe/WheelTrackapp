@@ -8,7 +8,7 @@ const colors = {
 
   // Cards e superfícies claras
   surface: '#FFFFFF',
-  surfaceSoft: '#fafafa',
+  surfaceSoft: '#ececec',
   surfaceMuted: '#E5E5E2',
 
   // Cards escuros

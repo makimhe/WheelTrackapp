@@ -234,13 +234,7 @@ export default function MaintenanceScreen({ navigation }) {
             </Text>
           </View>
 
-          <View style={styles.headerIcon}>
-            <Ionicons
-              name="construct-outline"
-              size={22}
-              color={colors.textLight}
-            />
-          </View>
+          
         </Animated.View>
 
         {/* Card principal com status da blindagem */}
@@ -368,7 +362,7 @@ export default function MaintenanceScreen({ navigation }) {
             <Ionicons
               name="calendar"
               size={20}
-              color={colors.black}
+              color={colors.white}
             />
           </View>
 
@@ -394,7 +388,7 @@ export default function MaintenanceScreen({ navigation }) {
               <Ionicons
                 name="warning-outline"
                 size={20}
-                color={colors.warning}
+                color={colors.black}
               />
             </View>
 
@@ -416,7 +410,7 @@ export default function MaintenanceScreen({ navigation }) {
               <Ionicons
                 name="alert-circle-outline"
                 size={20}
-                color={colors.danger}
+                color={colors.black}
               />
             </View>
 
@@ -836,7 +830,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.warningSoft,
+    backgroundColor: colors.accentSoft,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,

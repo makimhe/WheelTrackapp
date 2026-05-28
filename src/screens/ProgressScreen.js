@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
 
   sectionTitle: {
     fontSize: 22,
-    color: colors.white,
+    color: colors.textPrimary,
     fontFamily: fonts.title,
   },
 

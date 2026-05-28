@@ -122,7 +122,7 @@ function AnimatedDocumentItem({ doc, index }) {
           <Ionicons
             name="download-outline"
             size={18}
-            color={colors.black}
+            color={colors.white}
           />
         </TouchableOpacity>
       </TouchableOpacity>
@@ -236,13 +236,7 @@ export default function DocumentsScreen({ navigation }) {
             </Text>
           </View>
 
-          <View style={styles.headerIcon}>
-            <Ionicons
-              name="folder-open-outline"
-              size={22}
-              color={colors.textLight}
-            />
-          </View>
+          
         </View>
 
         {/* Card de resumo */}
@@ -353,13 +347,7 @@ export default function DocumentsScreen({ navigation }) {
                   </Text>
                 </View>
 
-                <View style={styles.categoryIcon}>
-                  <Ionicons
-                    name="folder-outline"
-                    size={18}
-                    color={colors.primary}
-                  />
-                </View>
+                
               </View>
 
               <View style={styles.docList}>
@@ -563,7 +551,7 @@ const styles = StyleSheet.create({
 
   filterButton: {
     backgroundColor: colors.surfaceSoft,
-    borderRadius: 999,
+    borderRadius: 14,
     paddingVertical: 10,
     paddingHorizontal: 17,
     marginRight: 10,
@@ -701,7 +689,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary2,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -709,7 +697,7 @@ const styles = StyleSheet.create({
   downloadAllBtn: {
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.black,
+    backgroundColor: colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

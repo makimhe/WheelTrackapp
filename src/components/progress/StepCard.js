@@ -165,7 +165,7 @@ export default function StepCard({
             <Ionicons
               name="list-outline"
               size={14}
-              color={isActive ? colors.primary : '#777'}
+              color={isActive ? colors.primary2 : '#8aaf2c'}
             />
 
             <Text
@@ -291,8 +291,8 @@ const styles = StyleSheet.create({
   },
 
   stepIconCompleted: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary2,
+    borderColor: colors.white,
   },
 
   stepIconActive: {

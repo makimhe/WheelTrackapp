@@ -39,7 +39,7 @@ export default function HomeHeader({
         activeOpacity={0.85}
         onPress={() => setMenuVisible(true)}
       >
-        <Ionicons name="person-outline" size={22} color={colors.textLight} />
+        <Ionicons name="person-outline" size={29} color={colors.textLight} />
       </TouchableOpacity>
 
       <Modal
@@ -105,7 +105,7 @@ export default function HomeHeader({
               <View style={styles.optionIcon}>
                 <Ionicons
                   name="chatbubble-ellipses-outline"
-                  size={18}
+                  size={21}
                   color={colors.textPrimary}
                 />
               </View>
@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    fontSize: 32,
+    fontSize: 27,
     color: colors.textPrimary,
     lineHeight: 38,
     fontFamily: fonts.titleExtra,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.surfaceDark,
+    backgroundColor: colors.primary2,
     alignItems: 'center',
     justifyContent: 'center',
   },

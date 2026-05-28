@@ -102,25 +102,7 @@ function AnimatedNotificationCard({
           isUnread && styles.notificationCardUnread,
         ]}
       >
-        {/* Ícone da notificação */}
-        <View
-          style={[
-            styles.notificationIcon,
-            isUnread && styles.notificationIconUnread,
-          ]}
-        >
-          <Ionicons
-            name={
-              isUnread
-                ? 'notifications'
-                : isInProgress
-                  ? 'time-outline'
-                  : 'checkmark'
-            }
-            size={18}
-            color={isUnread ? colors.black : colors.textPrimary}
-          />
-        </View>
+       
 
         {/* Conteúdo da notificação */}
         <View style={styles.notificationContent}>
@@ -330,17 +312,7 @@ export default function NotificationsScreen({ navigation }) {
                 </Text>
               </View>
 
-              <View style={styles.headerIcon}>
-                <Ionicons
-                  name="notifications-outline"
-                  size={22}
-                  color={colors.textLight}
-                />
-
-                {unreadCount > 0 && (
-                  <View style={styles.headerDot} />
-                )}
-              </View>
+              
             </View>
 
             {/* Resumo principal */}
@@ -391,7 +363,7 @@ export default function NotificationsScreen({ navigation }) {
                 <View style={styles.statIconBlack}>
                   <Ionicons
                     name="notifications"
-                    size={18}
+                    size={21}
                     color={colors.textLight}
                   />
                 </View>
@@ -405,7 +377,7 @@ export default function NotificationsScreen({ navigation }) {
                 <View style={styles.statIconPrimary}>
                   <Ionicons
                     name="flash-outline"
-                    size={18}
+                    size={21}
                     color={colors.primaryDark}
                   />
                 </View>
@@ -419,7 +391,7 @@ export default function NotificationsScreen({ navigation }) {
                 <View style={styles.statIconLight}>
                   <Ionicons
                     name="checkmark-done"
-                    size={18}
+                    size={21}
                     color={colors.textPrimary}
                   />
                 </View>
@@ -435,7 +407,7 @@ export default function NotificationsScreen({ navigation }) {
               <View style={styles.highlightCard}>
                 <View style={styles.highlightIcon}>
                   <Ionicons
-                    name="sparkles-outline"
+                    name="time-outline"
                     size={20}
                     color={colors.primary}
                   />

@@ -22,7 +22,7 @@ export default function NotificationsStats({
         <View style={styles.statIconBlack}>
           <Ionicons
             name="notifications"
-            size={18}
+            size={21}
             color="#FFF"
           />
         </View>
@@ -36,7 +36,7 @@ export default function NotificationsStats({
         <View style={styles.statIconPrimary}>
           <Ionicons
             name="flash-outline"
-            size={18}
+            size={21}
             color={colors.primary}
           />
         </View>
@@ -50,7 +50,7 @@ export default function NotificationsStats({
         <View style={styles.statIconLight}>
           <Ionicons
             name="checkmark-done"
-            size={18}
+            size={21}
             color="#111"
           />
         </View>
