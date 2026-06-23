@@ -1,68 +1,70 @@
-// Paleta central do app
-// Cinza premium + cards em destaque
-
 const colors = {
   // Fundo geral
-  background: '#D8D8D6',
-  backgroundDark: '#111111',
+  background: '#ebebeb',
+  backgroundDark: '#000000',
 
   // Cards e superfícies claras
   surface: '#FFFFFF',
-  surfaceSoft: '#ececec',
-  surfaceMuted: '#E5E5E2',
+  surfaceSoft: '#FFFFFF',
+  surfaceMuted: '#697586de',
+  surfaceMutedo: '#697586c4',
 
   // Cards escuros
-  surfaceDark: '#1b1b1bef',
-  surfaceDarkSoft: '#2A2A2A',
+  surfaceDark: '#000000',
+  surfaceDarko: '#1a1a1a',
+  surfaceDarkSoft: '#000000',
+  surfaceDarkSofte: '#5555553f',
 
   // Cor principal
-  primary: '#fd4d17',
-  primary2: '#8aaf2c',
-  primaryDark: '#111111',
-  primarySoft: 'rgba(17,17,17,0.08)',
-  primaryGlow: 'rgba(17,17,17,0.14)',
-  primaryBorder: 'rgba(17,17,17,0.14)',
+  primary: '#2970FF',
+  primary2: '#2970FF',
+  primaryDark: '#000000',
+  primarySoft: '#2970FF',
+  primaryGlow: '#2970FF',
+  primaryBorder: '#2970FF',
 
   // Secundária
-  secondary: '#5F5F5C',
-  secondarySoft: '#7A7A77',
+  secondary: '#697586',
+  secondarySoft: '#697586',
+  red: 'red',
 
   // Destaques
-  accent: '#9A9A95',
-  accentDark: '#747470',
-  accentSoft: 'rgba(154,154,149,0.14)',
+  accent: '#2970FF',
+  accentDark: '#000000',
+  accentSoft: '#2970FF',
 
   // Textos claros
-  textPrimary: '#111111',
-  textSecondary: '#666663',
-  textMuted: '#9A9A96',
+  textPrimary: '#000000',
+  textSecondary: '#697586',
+  textMuted: '#697586',
 
   // Textos escuros
   textLight: '#FFFFFF',
-  textLightMuted: '#D7D7D4',
+  textLightMuted: '#FFFFFF',
 
   // Bordas
-  border: '#E8E8E5',
-  borderDark: '#303030',
+  border: '#838a94',
+  borderDark: '#697586',
 
   // Estados
-  success: '#111111',
-  warning: '#8C8C88',
-  danger: '#111111',
+  success: '#2970FF',
+  warning: '#2970FF',
+  warningSoft: '#2970FF',
+  danger: '#000000',
 
   // Base
   white: '#FFFFFF',
-  black: '#1d1e1d',
+  black: '#000000',
+  dark: '#000000',
 
-  // Transparências
-  whiteSoft: 'rgba(255,255,255,0.35)',
-  blackSoft: 'rgba(17,17,17,0.08)',
+  // Transparências removidas para usar só as 4 cores
+  whiteSoft: '#FFFFFF',
+  blackSoft: '#000000',
 
   // Sombras
   shadow: '#000000',
+  red: '#f50000',
+  redo: '#cacacad3'
 };
 
-export default colors;
-
-//#EC3A02 
-//#9CB75A
+export default colors
