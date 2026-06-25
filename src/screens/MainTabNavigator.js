@@ -96,8 +96,6 @@ function CustomTabBar({ state, navigation }) {
         },
       ]}
     >
-      <View style={styles.tabGlow} />
-
       <View style={styles.tabBar}>
         {state.routes.map((route, index) => {
           const focused = state.index === index;
@@ -154,24 +152,17 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: "center",
   },
-
-  
-
   tabBar: {
     width: 300,
     height: 56,
     borderRadius: 999,
     backgroundColor: colors.surface,
-
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-
     paddingHorizontal: 6,
-
     borderWidth: 0.1,
     borderColor: colors.redo,
-
     shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
@@ -179,22 +170,18 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.10,
     shadowRadius: 28,
-
     elevation: 13,
   },
-
   tabItem: {
     width: 52,
     height: 58,
     alignItems: "center",
     justifyContent: "center",
   },
-
   iconWrapper: {
     alignItems: "center",
     justifyContent: "center",
   },
-
   iconBox: {
     width: 42,
     height: 42,
@@ -202,10 +189,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
   activeIcon: {
     backgroundColor: colors.primary,
-
     shadowColor: colors.primary,
     shadowOffset: {
       width: 0,
@@ -213,10 +198,8 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.45,
     shadowRadius: 12,
-
     elevation: 10,
   },
-
   activeDot: {
     width: 4,
     height: 4,

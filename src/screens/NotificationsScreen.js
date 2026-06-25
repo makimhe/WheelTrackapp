@@ -9,14 +9,76 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { notifications, vehicles } from '../services/mockData';
+import {
+  getBlindagemPorPlaca,
+  getEtapasPorBlindagem,
+  getVeiculosDoUsuario,
+} from '../services/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+
+function formatarHora(valor) {
+  if (!valor) return '--:--';
+
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return String(valor);
+
+  return data.toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function statusParaLabel(status) {
+  if (status?.toUpperCase() === 'CONCLUIDO') return 'etapa concluida';
+  if (status?.toUpperCase() === 'EM_ANDAMENTO') return 'etapa em andamento';
+  return 'etapa pendente';
+}
+
+function formatarStatus(statusBackend) {
+  if (statusBackend?.toUpperCase() === 'CONCLUIDO') return 'Concluido';
+  if (statusBackend?.toUpperCase() === 'EM_ANDAMENTO') return 'Em andamento';
+  return 'Pendente';
+}
+
+function formatarVeiculo(v, blindagem) {
+  const status = formatarStatus(blindagem?.status);
+
+  return {
+    id: v.placa,
+    model: v.modelo || `Veiculo ${v.placa}`,
+    plate: v.placa,
+    status,
+    progress: status === 'Concluido' ? 100 : status === 'Em andamento' ? 50 : 0,
+    blindingLevel: blindagem?.nivel_blindagem || blindagem?.nivelBlindagem || '-',
+    currentStep: status,
+    image: v.foto_url ? v.foto_url : require('../../assets/cars/byd.png'),
+    blindagemId: blindagem?.id || null,
+  };
+}
+
+function notificacoesPorEtapas(veiculo, blindagem, etapas) {
+  return etapas
+    .filter((etapa) => etapa.status?.toUpperCase() !== 'PENDENTE')
+    .map((etapa) => ({
+      id: `${veiculo.placa}-${etapa.id}`,
+      vehicle: veiculo.modelo || veiculo.placa,
+      plate: veiculo.placa,
+      step: etapa.etapa || etapa.nome || etapa.descricao || 'Etapa da blindagem',
+      label: statusParaLabel(etapa.status),
+      time: formatarHora(etapa.updatedAt || etapa.data_atualizacao || etapa.createdAt),
+      read: etapa.status?.toUpperCase() === 'CONCLUIDO',
+      vehicleData: formatarVeiculo(veiculo, blindagem),
+    }));
+}
 
 // Card animado de cada notificação
 function AnimatedNotificationCard({
@@ -25,33 +87,25 @@ function AnimatedNotificationCard({
   onPress,
   onOpenProgress,
 }) {
-  // Animações de entrada e toque
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(18)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  // Verifica se a notificação ainda não foi lida
   const isUnread = !item.read;
-
-  // Verifica se a notificação é de etapa em andamento
   const isInProgress = item.label?.toLowerCase().includes('andamento');
 
   useEffect(() => {
-    // Reseta a animação quando o item mudar
     fadeAnim.setValue(0);
     slideAnim.setValue(18);
 
-    // Faz as notificações aparecerem uma por uma
     Animated.sequence([
       Animated.delay(index * 80),
-
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
           duration: 320,
           useNativeDriver: true,
         }),
-
         Animated.spring(slideAnim, {
           toValue: 0,
           friction: 8,
@@ -62,7 +116,6 @@ function AnimatedNotificationCard({
     ]).start();
   }, [item.id, item.read, index]);
 
-  // Diminui levemente o card ao pressionar
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
       toValue: 0.98,
@@ -72,7 +125,6 @@ function AnimatedNotificationCard({
     }).start();
   };
 
-  // Volta o card ao tamanho normal
   const handlePressOut = () => {
     Animated.spring(scaleAnim, {
       toValue: 1,
@@ -86,10 +138,7 @@ function AnimatedNotificationCard({
     <Animated.View
       style={{
         opacity: fadeAnim,
-        transform: [
-          { translateY: slideAnim },
-          { scale: scaleAnim },
-        ],
+        transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
       }}
     >
       <TouchableOpacity
@@ -102,9 +151,6 @@ function AnimatedNotificationCard({
           isUnread && styles.notificationCardUnread,
         ]}
       >
-       
-
-        {/* Conteúdo da notificação */}
         <View style={styles.notificationContent}>
           <View style={styles.notificationTop}>
             <View style={styles.vehicleInfo}>
@@ -168,15 +214,12 @@ function AnimatedNotificationCard({
               </Text>
             </View>
 
-            {/* Abre a tela de progresso do carro */}
             <TouchableOpacity
               style={styles.progressButton}
               activeOpacity={0.85}
               onPress={onOpenProgress}
             >
-              <Text style={styles.progressButtonText}>
-                Progresso
-              </Text>
+              <Text style={styles.progressButtonText}>Progresso</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -188,35 +231,52 @@ function AnimatedNotificationCard({
 export default function NotificationsScreen({ navigation }) {
   const insets = useSafeAreaInsets();
 
-  // Filtro ativo da tela
   const [filter, setFilter] = useState('all');
+  const [loading, setLoading] = useState(true);
+  const [vehicleList, setVehicleList] = useState([]);
+  const [notificationList, setNotificationList] = useState([]);
 
-  // Lista local para conseguir marcar notificações como lidas
-  const [notificationList, setNotificationList] = useState(notifications);
+  useEffect(() => {
+    async function carregarNotificacoes() {
+      try {
+        const id = await AsyncStorage.getItem('id');
+        const veiculosRaw = await getVeiculosDoUsuario(id);
+        const veiculosComBlindagem = [];
+        const notificacoesGeradas = [];
 
-  // Contadores principais
+        for (const veiculo of veiculosRaw) {
+          const blindagem = await getBlindagemPorPlaca(veiculo.placa).catch(() => null);
+          veiculosComBlindagem.push(formatarVeiculo(veiculo, blindagem));
+
+          if (blindagem?.id) {
+            const etapas = await getEtapasPorBlindagem(blindagem.id).catch(() => []);
+            notificacoesGeradas.push(...notificacoesPorEtapas(veiculo, blindagem, etapas));
+          }
+        }
+
+        setVehicleList(veiculosComBlindagem);
+        setNotificationList(notificacoesGeradas);
+      } catch (error) {
+        Alert.alert('Erro', 'Nao foi possivel carregar as notificacoes.');
+        setNotificationList([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    carregarNotificacoes();
+  }, []);
+
   const unreadCount = notificationList.filter((n) => !n.read).length;
   const readCount = notificationList.filter((n) => n.read).length;
   const totalCount = notificationList.length;
 
-  // Pega a última notificação não lida ou a primeira da lista
-  const latestNotification =
-    notificationList.find((n) => !n.read) || notificationList[0];
-
-  // Aplica o filtro escolhido
   const filteredNotifications = notificationList.filter((notification) => {
-    if (filter === 'unread') {
-      return !notification.read;
-    }
-
-    if (filter === 'read') {
-      return notification.read;
-    }
-
+    if (filter === 'unread') return !notification.read;
+    if (filter === 'read') return notification.read;
     return true;
   });
 
-  // Marca uma notificação como lida
   const handlePressNotification = (id) => {
     setNotificationList((currentList) =>
       currentList.map((notification) =>
@@ -227,7 +287,6 @@ export default function NotificationsScreen({ navigation }) {
     );
   };
 
-  // Marca todas as notificações como lidas
   const markAllAsRead = () => {
     setNotificationList((currentList) =>
       currentList.map((notification) => ({
@@ -237,39 +296,40 @@ export default function NotificationsScreen({ navigation }) {
     );
   };
 
-  // Abre a tela de progresso do veículo ligado à notificação
   const openVehicleProgress = (notification) => {
     const selectedVehicle =
-      vehicles.find((vehicle) => vehicle.model === notification.vehicle) ||
-      vehicles[0];
+      notification.vehicleData ||
+      vehicleList.find(
+        (vehicle) =>
+          vehicle.plate === notification.plate || vehicle.model === notification.vehicle
+      ) ||
+      vehicleList[0];
+
+    if (!selectedVehicle) return;
 
     navigation.navigate('Progresso', {
       vehicle: selectedVehicle,
     });
   };
 
-  // Opções dos filtros
   const filters = [
-    {
-      key: 'all',
-      label: 'Todas',
-      count: totalCount,
-    },
-    {
-      key: 'unread',
-      label: 'Novas',
-      count: unreadCount,
-    },
-    {
-      key: 'read',
-      label: 'Lidas',
-      count: readCount,
-    },
+    { key: 'all', label: 'Todas', count: totalCount },
+    { key: 'unread', label: 'Novas', count: unreadCount },
+    { key: 'read', label: 'Lidas', count: readCount },
   ];
+
+  if (loading) {
+    return (
+      <View style={[styles.screen, styles.centered]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.screen}>
-      
+      <View style={styles.glowOne} />
+      <View style={styles.glowTwo} />
 
       <FlatList
         data={filteredNotifications}
@@ -304,28 +364,27 @@ export default function NotificationsScreen({ navigation }) {
                 <Text style={styles.headerSmall}>
                   Central de atualizações
                 </Text>
-
-                <Text style={styles.headerTitle}>
-                  Notificações
-                </Text>
+                <Text style={styles.headerTitle}>Notificações</Text>
               </View>
-
-              
             </View>
 
             {/* Resumo principal */}
             <View style={styles.summaryCard}>
               <View style={styles.summaryTextBox}>
-                <Text style={styles.summaryTitle}>
-                  {unreadCount > 0
-                    ? `${unreadCount} novas atualizações`
-                    : 'Tudo em dia'}
+                <Text style={styles.summaryTitle} numberOfLines={2}>
+                  {unreadCount === 0
+                    ? 'Tudo em dia'
+                    : unreadCount === 1
+                    ? '1 nova atualização'
+                    : `${unreadCount} novas atualizações`}
                 </Text>
 
                 <Text style={styles.summaryText}>
-                  {unreadCount > 0
-                    ? 'Você tem movimentações recentes nas etapas da blindagem.'
-                    : 'Nenhuma atualização pendente no momento.'}
+                  {unreadCount === 0
+                    ? 'Nenhuma atualização pendente no momento.'
+                    : unreadCount === 1
+                    ? 'Você tem 1 movimentação recente na etapa da blindagem.'
+                    : 'Você tem movimentações recentes nas etapas da blindagem.'}
                 </Text>
               </View>
 
@@ -343,7 +402,6 @@ export default function NotificationsScreen({ navigation }) {
                   size={17}
                   color={unreadCount === 0 ? colors.white : colors.textLight}
                 />
-
                 <Text
                   style={[
                     styles.markButtonText,
@@ -359,54 +417,33 @@ export default function NotificationsScreen({ navigation }) {
             <View style={styles.statsRow}>
               <View style={styles.statCard}>
                 <View style={styles.statIconBlack}>
-                  <Ionicons
-                    name="notifications"
-                    size={21}
-                    color={colors.textLight}
-                  />
+                  <Ionicons name="notifications" size={21} color={colors.textLight} />
                 </View>
-
                 <Text style={styles.statValue}>{totalCount}</Text>
-
                 <Text style={styles.statLabel}>Total</Text>
               </View>
 
               <View style={styles.statCard}>
                 <View style={styles.statIconPrimary}>
-                  <Ionicons
-                    name="flash-outline"
-                    size={21}
-                    color={colors.surface}
-                  />
+                  <Ionicons name="flash-outline" size={21} color={colors.surface} />
                 </View>
-
                 <Text style={styles.statValue}>{unreadCount}</Text>
-
                 <Text style={styles.statLabel}>Novas</Text>
               </View>
 
               <View style={styles.statCardLast}>
                 <View style={styles.statIconLight}>
-                  <Ionicons
-                    name="checkmark-done"
-                    size={21}
-                    color={colors.surface}
-                  />
+                  <Ionicons name="checkmark-done" size={21} color={colors.surface} />
                 </View>
-
                 <Text style={styles.statValue}>{readCount}</Text>
-
                 <Text style={styles.statLabel}>Lidas</Text>
               </View>
             </View>
-
-            
 
             {/* Filtros */}
             <View style={styles.filters}>
               {filters.map((item) => {
                 const isActive = filter === item.key;
-
                 return (
                   <TouchableOpacity
                     key={item.key}
@@ -452,13 +489,10 @@ export default function NotificationsScreen({ navigation }) {
                 {filter === 'all'
                   ? 'Todas as notificações'
                   : filter === 'unread'
-                    ? 'Atualizações novas'
-                    : 'Notificações lidas'}
+                  ? 'Atualizações novas'
+                  : 'Notificações lidas'}
               </Text>
-
-              <Text style={styles.sectionHint}>
-                Toque para marcar como lida
-              </Text>
+              <Text style={styles.sectionHint}>Toque para marcar como lida</Text>
             </View>
           </View>
         }
@@ -477,11 +511,7 @@ export default function NotificationsScreen({ navigation }) {
               size={38}
               color={colors.textMuted}
             />
-
-            <Text style={styles.emptyTitle}>
-              Nenhuma notificação
-            </Text>
-
+            <Text style={styles.emptyTitle}>Nenhuma notificação</Text>
             <Text style={styles.emptyText}>
               Quando houver uma atualização, ela aparecerá aqui.
             </Text>
@@ -497,17 +527,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   content: {
     paddingHorizontal: 20,
   },
-
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 24,
   },
-
   backButton: {
     width: 46,
     height: 46,
@@ -515,133 +547,85 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 10,
     elevation: 4,
   },
-
   headerTextBox: {
     flex: 1,
     marginLeft: 14,
   },
-
   headerSmall: {
     fontSize: 13,
     color: colors.textSecondary,
     fontFamily: fonts.body,
   },
-
   headerTitle: {
     fontSize: 30,
     color: colors.textPrimary,
     marginTop: 2,
     fontFamily: fonts.titleExtra,
   },
-
-  headerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.black,
-    alignItems: 'center',
-    justifyContent: 'center',
-
-    shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    elevation: 4,
-  },
-
-  headerDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.danger,
-    position: 'absolute',
-    top: 12,
-    right: 12,
-  },
-
   summaryCard: {
     backgroundColor: colors.surfaceSoft,
     borderRadius: 34,
     padding: 22,
     marginBottom: 16,
-
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.07,
     shadowRadius: 18,
     elevation: 5,
   },
-
   summaryTextBox: {
     flex: 1,
     paddingRight: 14,
   },
-
   summaryTitle: {
     fontSize: 22,
     color: colors.primary,
     fontFamily: fonts.title,
+    flexShrink: 1,
   },
-
   summaryText: {
     fontSize: 13,
     color: colors.textSecondary,
     marginTop: 5,
     lineHeight: 18,
     fontFamily: fonts.body,
+    flexShrink: 1,
   },
-
   markButton: {
     height: 42,
     borderRadius: 21,
     backgroundColor: colors.black,
     paddingHorizontal: 13,
-
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-
   markButtonDisabled: {
     backgroundColor: colors.surfaceMuted,
   },
-
   markButtonText: {
     fontSize: 12,
     color: colors.red,
     marginLeft: 6,
     fontFamily: fonts.button,
   },
-
   markButtonTextDisabled: {
     color: colors.white,
   },
-
   statsRow: {
     flexDirection: 'row',
     marginBottom: 16,
   },
-
   statCard: {
     flex: 1,
     backgroundColor: colors.surfaceSoft,
@@ -649,34 +633,24 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginRight: 10,
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
     elevation: 3,
   },
-
   statCardLast: {
     flex: 1,
     backgroundColor: colors.surfaceSoft,
     borderRadius: 24,
     paddingVertical: 16,
     alignItems: 'center',
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
     elevation: 3,
   },
-
   statIconBlack: {
     width: 38,
     height: 38,
@@ -685,7 +659,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   statIconPrimary: {
     width: 38,
     height: 38,
@@ -694,7 +667,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   statIconLight: {
     width: 38,
     height: 38,
@@ -703,64 +675,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   statValue: {
     fontSize: 22,
     color: colors.textPrimary,
     marginTop: 8,
     fontFamily: fonts.title,
   },
-
   statLabel: {
     fontSize: 11,
     color: colors.primary,
     marginTop: 2,
     fontFamily: fonts.body,
   },
-
-  highlightCard: {
-    backgroundColor: colors.black,
-    borderRadius: 28,
-    padding: 16,
-    marginBottom: 20,
-
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  highlightIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.surfacedark,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-
-  highlightContent: {
-    flex: 1,
-  },
-
-  highlightTitle: {
-    fontSize: 13,
-    color: colors.textLightMuted,
-    fontFamily: fonts.subtitle,
-  },
-
-  highlightText: {
-    fontSize: 15,
-    color: colors.textLight,
-    marginTop: 3,
-    lineHeight: 20,
-    fontFamily: fonts.titleMedium,
-  },
-
   filters: {
     flexDirection: 'row',
     marginBottom: 24,
   },
-
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -769,31 +699,23 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 14,
     marginRight: 10,
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.04,
     shadowRadius: 10,
     elevation: 2,
   },
-
   filterButtonActive: {
     backgroundColor: colors.primary,
   },
-
   filterText: {
     fontSize: 13,
     color: colors.textSecondary,
     fontFamily: fonts.subtitle,
   },
-
   filterTextActive: {
     color: colors.textLight,
   },
-
   filterCount: {
     minWidth: 22,
     height: 22,
@@ -804,38 +726,31 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     paddingHorizontal: 6,
   },
-
   filterCountActive: {
     backgroundColor: colors.surface,
   },
-
   filterCountText: {
     fontSize: 11,
     color: colors.textLight,
     fontFamily: fonts.button,
   },
-
   filterCountTextActive: {
     color: colors.black,
   },
-
   sectionHeader: {
     marginBottom: 16,
   },
-
   sectionTitle: {
     fontSize: 20,
     color: colors.textPrimary,
     fontFamily: fonts.title,
   },
-
   sectionHint: {
     fontSize: 12,
     color: colors.textSecondary,
     marginTop: 2,
     fontFamily: fonts.body,
   },
-
   notificationCard: {
     flexDirection: 'row',
     backgroundColor: colors.surfaceSoft,
@@ -843,95 +758,63 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 14,
     overflow: 'hidden',
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.06,
     shadowRadius: 16,
     elevation: 4,
   },
-
   notificationCardUnread: {
     borderWidth: 1,
     borderColor: colors.primaryBorder,
     backgroundColor: colors.surface,
   },
-
-  notificationIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: colors.surface,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginRight: 12,
-  },
-
-  notificationIconUnread: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-
   notificationContent: {
     flex: 1,
   },
-
   notificationTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 8,
   },
-
   vehicleInfo: {
     flex: 1,
     paddingRight: 10,
   },
-
   vehicleName: {
     fontSize: 15,
     color: colors.textPrimary,
     fontFamily: fonts.subtitle,
   },
-
   notificationTime: {
     fontSize: 11,
     color: colors.textMuted,
     marginTop: 2,
     fontFamily: fonts.body,
   },
-
   newBadge: {
     backgroundColor: colors.primary,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-
   newBadgeText: {
     fontSize: 11,
     color: colors.black,
     fontFamily: fonts.button,
   },
-
   readBadge: {
     backgroundColor: colors.surfaceMuted,
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-
   readBadgeText: {
     fontSize: 11,
     color: colors.textLight,
     fontFamily: fonts.subtitle,
   },
-
   notificationStep: {
     fontSize: 14,
     color: colors.textSecondary,
@@ -939,13 +822,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontFamily: fonts.body,
   },
-
   notificationBottom: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   labelPill: {
     flex: 1,
     flexDirection: 'row',
@@ -956,11 +837,9 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     marginRight: 8,
   },
-
   labelPillUnread: {
     backgroundColor: colors.primarySoft,
   },
-
   labelText: {
     flex: 1,
     fontSize: 11,
@@ -968,11 +847,9 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontFamily: fonts.subtitle,
   },
-
   labelTextUnread: {
     color: colors.primaryDark,
   },
-
   progressButton: {
     height: 30,
     borderRadius: 15,
@@ -981,37 +858,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   progressButtonText: {
     fontSize: 11,
     color: colors.textLight,
     fontFamily: fonts.button,
   },
-
   emptyBox: {
     backgroundColor: colors.surfaceSoft,
     borderRadius: 28,
     padding: 30,
     alignItems: 'center',
     marginTop: 18,
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.05,
     shadowRadius: 16,
     elevation: 4,
   },
-
   emptyTitle: {
     fontSize: 18,
     color: colors.textPrimary,
     marginTop: 12,
     fontFamily: fonts.title,
   },
-
   emptyText: {
     fontSize: 13,
     color: colors.textSecondary,
