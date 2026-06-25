@@ -18,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
-import { getVeiculosDoUsuario, getBlindagemPorPlaca } from '../services/api';
+import { getVeiculosDoUsuario, getBlindagemPorPlaca, getEtapasPorBlindagem } from '../services/api';
 
 import HomeHeader from '../components/home/HomeHeader';
 import HomeSummaryCard from '../components/home/HomeSummaryCard';
@@ -54,25 +54,35 @@ export default function HomeScreen({ navigation }) {
       const email = await AsyncStorage.getItem('email');
       setUserEmail(email || '');
 
-      // Busca veículos do usuário — agora tem modelo, cor, foto_url
       const veiculosRaw = await getVeiculosDoUsuario(id);
 
       const veiculosFormatados = await Promise.all(
         veiculosRaw.map(async (v) => {
           const blindagem = await getBlindagemPorPlaca(v.placa).catch(() => null);
           const status = formatarStatus(blindagem?.status);
-          const progress = status === 'Concluído' ? 100 : status === 'Em andamento' ? 50 : 0;
+
+          // Calcula progresso real pelas etapas — igual ao ProgressScreen
+          let progress = 0;
+          if (blindagem?.id) {
+            try {
+              const etapas = await getEtapasPorBlindagem(blindagem.id);
+              const total = etapas.length;
+              const concluidas = etapas.filter(e => e.status?.toUpperCase() === 'CONCLUIDO').length;
+              progress = total > 0 ? Math.round((concluidas / total) * 100) : 0;
+            } catch (_) {
+              progress = 0;
+            }
+          }
 
           return {
             id: v.placa,
-            model: v.modelo || `Veículo ${v.placa}`,  // usa o modelo real
+            model: v.modelo || `Veículo ${v.placa}`,
             plate: v.placa,
             cor: v.cor || '',
             status,
             progress,
             blindingLevel: blindagem?.nivel_blindagem || '—',
             currentStep: blindagem ? formatarStatus(blindagem.status) : 'Aguardando início',
-            // foto_url do Cloudinary — se tiver, usa; senão imagem padrão
             image: v.foto_url ? v.foto_url : require('../../assets/cars/byd.png'),
             steps: [],
             blindagemId: blindagem?.id || null,
@@ -82,7 +92,6 @@ export default function HomeScreen({ navigation }) {
 
       setVehicles(veiculosFormatados);
 
-      // Extrai nome do email (ex: lavinia2@wheeltrack.com → lavinia2)
       const nomeDoEmail = email ? email.split('@')[0] : 'Cliente';
       setUserName(nomeDoEmail);
 
@@ -206,6 +215,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   glowOne: {
     position: 'absolute',
     width: 220,
@@ -230,18 +244,12 @@ const styles = StyleSheet.create({
     height: 54,
     backgroundColor: colors.surfaceMuted,
     borderRadius: 21,
-
     flexDirection: 'row',
     alignItems: 'center',
-
     paddingHorizontal: 18,
     marginBottom: 14,
-
     shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
